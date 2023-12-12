@@ -3,4 +3,7 @@ project(ProjetChipEight C)
 
 set(CMAKE_C_STANDARD 23)
 
-add_executable(ProjetChipEight main.c)
+add_executable(ProjetChipEight main.c
+        memory.h
+        memory.c
+)

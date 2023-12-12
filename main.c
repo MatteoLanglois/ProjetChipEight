@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
-    printf("Hello, World!\n");
-    return 0;
+    unsigned int* memory = malloc(4096 * sizeof(unsigned int));
+    free(memory);
 }
