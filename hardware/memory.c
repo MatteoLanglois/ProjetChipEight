@@ -6,14 +6,14 @@ struct RandomAccessMemory* initMemory(){
   return memory;
 }
 
-uint8_t readMemory(const struct RandomAccessMemory* memory, const unsigned int addr){
+uint8_t readMemory(const struct RandomAccessMemory* memory, uint16_t addr){
   if (addr < 4096){
     return memory->memory[addr];
   }
   return -1;
 }
 
-int writeMemory(struct RandomAccessMemory* memory, const unsigned int addr, const uint8_t newVal) {
+int writeMemory(struct RandomAccessMemory* memory, uint16_t addr, const uint8_t newVal) {
   if (addr <= 4096) {
     memory->memory[addr] = newVal;
   }

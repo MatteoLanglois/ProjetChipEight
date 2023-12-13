@@ -1,25 +1,19 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifndef ProjetChipEight
-#define ProjetChipEight
-
-struct pile {
-  unsigned int value;
-  struct pile* next;
-};
+#define RAM_max 4096
 
 struct RandomAccessMemory {
   uint8_t* memory;
 };
 
-struct RandomAccessMemory* initMemory();
-
-unsigned int readMemory(const unsigned int* memory, const unsigned int addr);
-
-int writeMemory(struct RandomAccessMemory* memory, const unsigned int addr, const uint8_t  newVal);
-
-int freeMemory(struct RandomAccessMemory* memory);
+struct RandomAccessMemory* RAM_init();
+unsigned int RAM_read(const unsigned int* memory, uint16_t addr);
+int RAM_write(struct RandomAccessMemory* memory, uint16_t addr, const uint8_t newVal);
+int RAM_destroy(struct RandomAccessMemory* memory);
 
 #endif
