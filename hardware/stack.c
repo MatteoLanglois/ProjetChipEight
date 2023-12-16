@@ -32,7 +32,7 @@ struct Stack* Stack_init(){
 int addStack(struct Stack* stack, uint16_t value){
     struct Maillon* new = Maillon_init(value);
     if (new){
-      if (size < STACK_SIZE){
+      if (stack->size < STACK_SIZE){
         new->prec = stack->tail;
         stack->tail = new;
         stack->size++;
@@ -64,4 +64,12 @@ void Stack_destroy(struct Stack* stack){
   while(removeStack(stack) != -1){
   }
   return;
+}
+
+int Maillon_destroy(struct Maillon *maillon) {
+    if (maillon == NULL) {
+        return -1;
+    }
+    free(maillon);
+    return 0;
 }

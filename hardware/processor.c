@@ -28,11 +28,11 @@ void ret(struct Processor* processor) {
     processor->reg->programCounter = processor->stack->tail->value;
 }
 
-void jmp(struct Processor* processor, const uint16_t addr) {
+void jmp(struct Processor* processor, uint16_t addr) {
     processor->reg->programCounter = addr;
 }
 
-void call(struct Processor* processor, const uint16_t addr) {
+void call(struct Processor* processor, uint16_t addr) {
     addStack(processor->stack, processor->reg->programCounter);
     processor->reg->programCounter = addr;
 }
