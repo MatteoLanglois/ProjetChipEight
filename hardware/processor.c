@@ -80,26 +80,24 @@ void processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg
 }
 
 void processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    // Ou bit à bit, pas logique
-    // TODO
-    processor->regV[reg1] = processor->regV[reg1] || processor->regV[reg2];
+    processor->regV[reg1] = processor->regV[reg1] | processor->regV[reg2];
 }
 
 void processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    // Et bit à bit, pas logique
-    // TODO
-    processor->regV[reg1] = processor->regV[reg1] && processor->regV[reg2];
+    processor->regV[reg1] = processor->regV[reg1] & processor->regV[reg2];
 
 }
 
 void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    processor->regV[reg1] = (processor->regV[reg1] || processor->regV[reg2]) &&
-            !(processor->regV[reg1] && processor->regV[reg2]);
+    processor->regV[reg1] = (processor->regV[reg1] | processor->regV[reg2]) &
+            !(processor->regV[reg1] & processor->regV[reg2]);
 }
 
 void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if ((int)processor->regV[reg1] + (int)processor->regV[reg2] > 255) {
-        // TODO
+        processor->regV[reg1] = (processor->regV[reg1] + processor->regV[reg2])
+                % 255;
+        processor->regV[15] = 1;
     } else {
         processor_7xkk_add(processor, reg1, processor->regV[reg2]);
     }
