@@ -33,7 +33,7 @@ void processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_00e0_cls(struct Processor* processor) {
-    // TODO
+    // TODO pas d'écran
 }
 
 void processor_00ee_ret(struct Processor* processor) {
@@ -45,7 +45,9 @@ void processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_2nnn_call(struct Processor* processor, uint16_t addr) {
-    // TODO
+    processor->SP++;
+    processor->stack[processor->SP] = processor->programCounter;
+    processor->SP--;
 }
 
 void processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
