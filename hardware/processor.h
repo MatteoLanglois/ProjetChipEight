@@ -385,7 +385,7 @@ void processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr);
 /**
  * \relates Processor
  * \fn void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
- * \brief Set Vx = random byte AND kk.
+ * \brief Set regx = random byte AND val.
  *
  * L'interpréteur génère un nombre aléatoire entre 0 et 255, puis la fonction
  * AND y est appliqué avec la valeur val. Le résultat est stocké dans Vx

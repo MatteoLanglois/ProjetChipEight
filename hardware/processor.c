@@ -152,8 +152,8 @@ void processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
-    // TODO
-    // Utiliser random de C.
+    long int y = random() / 255;
+    processor->regV[reg] = y && val;
 }
 
 void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
