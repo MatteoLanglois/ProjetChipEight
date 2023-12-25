@@ -2,7 +2,14 @@
 
 struct RandomAccessMemory* initMemory(){
   struct RandomAccessMemory* memory = malloc(sizeof(struct RandomAccessMemory));
+  if (memory == NULL){
+    return NULL;
+  }
   memory->memory = malloc(4096 * sizeof(uint8_t));
+  if (memory->memory == NULL){
+    free(memory);
+    return NULL;
+  }
   return memory;
 }
 
