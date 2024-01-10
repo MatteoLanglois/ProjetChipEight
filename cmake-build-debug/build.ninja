@@ -52,12 +52,28 @@ build cmake_object_order_depends_target_ProjetChipEight: phony || CMakeFiles/Pro
 build CMakeFiles/ProjetChipEight.dir/main.c.o: C_COMPILER__ProjetChipEight_unscanned_Debug /home/mlanglois/Documents/ProjetChipEight/main.c || cmake_object_order_depends_target_ProjetChipEight
   DEP_FILE = CMakeFiles/ProjetChipEight.dir/main.c.o.d
   FLAGS = -g -std=gnu2x -fdiagnostics-color=always
+  INCLUDES = -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/ProjetChipEight.dir
   OBJECT_FILE_DIR = CMakeFiles/ProjetChipEight.dir
 
-build CMakeFiles/ProjetChipEight.dir/memory.c.o: C_COMPILER__ProjetChipEight_unscanned_Debug /home/mlanglois/Documents/ProjetChipEight/memory.c || cmake_object_order_depends_target_ProjetChipEight
-  DEP_FILE = CMakeFiles/ProjetChipEight.dir/memory.c.o.d
+build CMakeFiles/ProjetChipEight.dir/hardware/memory.c.o: C_COMPILER__ProjetChipEight_unscanned_Debug /home/mlanglois/Documents/ProjetChipEight/hardware/memory.c || cmake_object_order_depends_target_ProjetChipEight
+  DEP_FILE = CMakeFiles/ProjetChipEight.dir/hardware/memory.c.o.d
   FLAGS = -g -std=gnu2x -fdiagnostics-color=always
+  INCLUDES = -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/ProjetChipEight.dir
+  OBJECT_FILE_DIR = CMakeFiles/ProjetChipEight.dir/hardware
+
+build CMakeFiles/ProjetChipEight.dir/hardware/processor.c.o: C_COMPILER__ProjetChipEight_unscanned_Debug /home/mlanglois/Documents/ProjetChipEight/hardware/processor.c || cmake_object_order_depends_target_ProjetChipEight
+  DEP_FILE = CMakeFiles/ProjetChipEight.dir/hardware/processor.c.o.d
+  FLAGS = -g -std=gnu2x -fdiagnostics-color=always
+  INCLUDES = -isystem /usr/include/SDL2
+  OBJECT_DIR = CMakeFiles/ProjetChipEight.dir
+  OBJECT_FILE_DIR = CMakeFiles/ProjetChipEight.dir/hardware
+
+build CMakeFiles/ProjetChipEight.dir/chip8.c.o: C_COMPILER__ProjetChipEight_unscanned_Debug /home/mlanglois/Documents/ProjetChipEight/chip8.c || cmake_object_order_depends_target_ProjetChipEight
+  DEP_FILE = CMakeFiles/ProjetChipEight.dir/chip8.c.o.d
+  FLAGS = -g -std=gnu2x -fdiagnostics-color=always
+  INCLUDES = -isystem /usr/include/SDL2
   OBJECT_DIR = CMakeFiles/ProjetChipEight.dir
   OBJECT_FILE_DIR = CMakeFiles/ProjetChipEight.dir
 
@@ -69,8 +85,9 @@ build CMakeFiles/ProjetChipEight.dir/memory.c.o: C_COMPILER__ProjetChipEight_uns
 #############################################
 # Link the executable ProjetChipEight
 
-build ProjetChipEight: C_EXECUTABLE_LINKER__ProjetChipEight_Debug CMakeFiles/ProjetChipEight.dir/main.c.o CMakeFiles/ProjetChipEight.dir/memory.c.o
+build ProjetChipEight: C_EXECUTABLE_LINKER__ProjetChipEight_Debug CMakeFiles/ProjetChipEight.dir/main.c.o CMakeFiles/ProjetChipEight.dir/hardware/memory.c.o CMakeFiles/ProjetChipEight.dir/hardware/processor.c.o CMakeFiles/ProjetChipEight.dir/chip8.c.o | /usr/lib64/libSDL2main.a /usr/lib64/libSDL2-2.0.so.0.2800.5 /home/mlanglois/Documents/ProjetChipEight/libprovided/lib/release/x64/libprovided.a
   FLAGS = -g
+  LINK_LIBRARIES = /usr/lib64/libSDL2main.a  /usr/lib64/libSDL2-2.0.so.0.2800.5  /home/mlanglois/Documents/ProjetChipEight/libprovided/lib/release/x64/libprovided.a
   OBJECT_DIR = CMakeFiles/ProjetChipEight.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -82,7 +99,7 @@ build ProjetChipEight: C_EXECUTABLE_LINKER__ProjetChipEight_Debug CMakeFiles/Pro
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/mlanglois/Documents/ProjetChipEight/cmake-build-debug && /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/mlanglois/Documents/ProjetChipEight/cmake-build-debug && /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -93,7 +110,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/mlanglois/Documents/ProjetChipEight/cmake-build-debug && /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/mlanglois/Documents/ProjetChipEight -B/home/mlanglois/Documents/ProjetChipEight/cmake-build-debug
+  COMMAND = cd /home/mlanglois/Documents/ProjetChipEight/cmake-build-debug && /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/mlanglois/Documents/ProjetChipEight -B/home/mlanglois/Documents/ProjetChipEight/cmake-build-debug
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -120,14 +137,14 @@ build all: phony ProjetChipEight
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /home/mlanglois/Documents/ProjetChipEight/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.0/CMakeCCompiler.cmake CMakeFiles/3.27.0/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/FeatureSummary.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /home/mlanglois/Documents/ProjetChipEight/CMakeLists.txt /usr/lib64/cmake/SDL2/SDL2Config.cmake /usr/lib64/cmake/SDL2/SDL2ConfigVersion.cmake /usr/lib64/cmake/SDL2/SDL2Targets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2Targets.cmake /usr/lib64/cmake/SDL2/SDL2mainTargets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2mainTargets.cmake /usr/lib64/cmake/SDL2/SDL2testTargets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2testTargets.cmake /usr/lib64/cmake/SDL2/sdlfind.cmake CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion-nova/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /home/mlanglois/Documents/ProjetChipEight/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.0/CMakeCCompiler.cmake CMakeFiles/3.27.0/CMakeSystem.cmake: phony
+build /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/FeatureSummary.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU-C.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-GNU.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux-Initialize.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/Linux.cmake /home/mlanglois/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /home/mlanglois/Documents/ProjetChipEight/CMakeLists.txt /usr/lib64/cmake/SDL2/SDL2Config.cmake /usr/lib64/cmake/SDL2/SDL2ConfigVersion.cmake /usr/lib64/cmake/SDL2/SDL2Targets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2Targets.cmake /usr/lib64/cmake/SDL2/SDL2mainTargets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2mainTargets.cmake /usr/lib64/cmake/SDL2/SDL2testTargets-noconfig.cmake /usr/lib64/cmake/SDL2/SDL2testTargets.cmake /usr/lib64/cmake/SDL2/sdlfind.cmake CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake: phony
 
 
 #############################################

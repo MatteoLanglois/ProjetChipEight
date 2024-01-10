@@ -5,6 +5,11 @@
 #include <stdlib.h>
 
 #include "memory.h"
+#include "../libprovided/include/display/display.h"
+#include "../libprovided/include/display/sprite.h"
+#include "../libprovided/include/keyboard/keyboard.h"
+#include "../libprovided/include/misc/error.h"
+#include "../libprovided/include/speaker/speaker.h"
 
 /**
  * \brief La structure représentant le processeur de la machine.
@@ -60,6 +65,18 @@ struct Processor {
      * mémoire vive de la machine.
      */
     struct RandomAccessMemory* RAM;
+
+    /**
+     * \brief un pointeur vers la structure display représentant l'écran de la
+     * machine
+     */
+    struct Display* display;
+
+    /**
+     * \brief un pointeur vers la structure keyboard représentant le clavier de la
+     * machine
+     */
+    struct Keyboard* keyboard;
 };
 
 // Gestion du processeur
@@ -88,8 +105,13 @@ void Proc_delete(struct Processor* processor);
  * \relates Processor
  * \fn void processor_fetch_decode_execute()
  * \brief Fonction
+ *
+ * @param instruction l'instruction à récupérer, décoder et exécuter
  */
-void processor_fetch_decode_execute();
+void processor_fetch_decode_execute(struct Processor* processor);
+
+// Load sprite in memory
+void load_sprite(struct Processor* processor);
 
 
 // Les 35 instructions de chip 8
@@ -408,7 +430,8 @@ void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
  * @param reg1
  * @param reg2
  */
-void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
+        uint8_t nibble);
 
 /**
  * \relates Processor

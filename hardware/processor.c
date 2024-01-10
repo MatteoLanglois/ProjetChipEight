@@ -18,12 +18,68 @@ struct Processor* Proc_init() {
         return NULL;
     }
 
+    if (Display_init(processor->display, 0) == 1) {
+        free(processor->stack);
+        free(processor->RAM);
+        free(processor);
+        return NULL;
+    }
+
+    load_sprite(processor);
+
+    processor->programCounter = 200;
+
     return processor;
 }
 
 void Proc_delete(struct Processor* processor) {
     free(processor->stack);
     free(processor);
+}
+
+// Fetch Decode execute
+
+void processor_fetch_decode_execute(struct Processor* processor) {
+    // fetch
+    uint8_t instruc = processor->RAM->memory[processor->programCounter];
+
+    // decode
+
+
+    // execute
+
+
+}
+
+
+// Load Sprite in memory
+
+void load_sprite(struct Processor* processor) {
+    struct Sprite* sprite;
+    Sprite_init(sprite, 40);
+    int spriteList[16][5] = {{240, 144, 144, 144, 240}, // 0
+                             {32, 96, 32, 32, 112}, // 1
+                             {240, 16, 240, 128, 240}, // 2
+                             {240, 16, 240, 16, 240}, // 3
+                             {144, 144, 240, 16, 16}, // 4
+                             {240, 128, 240, 16, 240}, // 5
+                             {240, 128, 240, 144, 240}, // 6
+                             {240, 16, 32, 64, 64}, // 7
+                             {240, 144, 240, 144, 240}, // 8
+                             {240, 144, 240, 16, 240}, // 9
+                             {240, 144, 240, 144, 144}, // A
+                             {224, 144, 224, 144, 224}, // B
+                             {240, 128, 128, 128, 240}, // C
+                             {224, 144, 144, 144, 224}, //D
+                             {240, 128, 240, 128, 240}, // E
+                             {240, 128, 240, 128, 128}}; // F
+
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 5; j++) {
+            processor->RAM->memory[431 + i * 5 + j] = spriteList[i][j];
+        }
+    }
+
 }
 
 // 35 instructions
@@ -33,7 +89,7 @@ void processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_00e0_cls(struct Processor* processor) {
-    // TODO pas d'écran
+    Display_CLS(processor->display);
 }
 
 void processor_00ee_ret(struct Processor* processor) {
@@ -122,11 +178,17 @@ void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
     else{
         processor->regV[15] = (uint8_t)1;
     }
-    processor->regV[reg] = (uint8_t)((int)processor->regV[reg]/2)
+    processor->regV[reg] = (uint8_t)((int)processor->regV[reg]/2);
 }
 
 void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    // TODO
+    if ((int)processor->regV[reg2] > (int)processor->regV[reg1]){
+        processor->regV[15] = (uint8_t)1;
+    }
+    else {
+        processor->regV[15] = (uint8_t)0;
+    }
+    processor->regV[reg1] = (uint8_t)((int)processor->regV[reg1] - (int)processor->regV[reg2]);
 }
 
 void processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
@@ -136,7 +198,7 @@ void processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
     else{
         processor->regV[15] = (uint8_t)1;
     }
-    processor->regV[reg] = (uint8_t)((int)processor->regV[reg]*2)
+    processor->regV[reg] = (uint8_t)((int)processor->regV[reg]*2);
 }
 
 void processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
@@ -158,16 +220,31 @@ void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
     processor->regV[reg] = y && val;
 }
 
-void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    // TODO pas d'écran
+void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
+        uint8_t nibble) {
+    // Init a sprite
+    struct Sprite* sprite;
+    Sprite_init(sprite, 0);
+    // On reconstruit le sprite
+    for (uint16_t i = processor->I; i < processor->I + nibble; i++) {
+        Sprite_add(sprite, processor->RAM->memory[i]);
+    }
+    // On appelle la fonction DRW
+    Display_DRW(processor->display, sprite,
+                processor->regV[reg1], processor->regV[reg2],
+                &processor->regV[15]);
 }
 
 void processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
-    // TODO pas de clavier
+    if (Keyboard_get(processor->keyboard, reg)==1){
+        processor->programCounter += 2;
+    }
 }
 
 void processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
-    // TODO pas de clavier
+    if (Keyboard_get(processor->keyboard, reg)==0){
+        processor->programCounter += 2;
+    }
 }
 
 void processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
@@ -175,7 +252,7 @@ void processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
 }
 
 void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
-    // TODO pas de clavier
+    Keyboard_wait(processor->keyboard, &processor->regV[reg]);
 }
 
 void processor_Fx15_lddt2(struct Processor* processor, uint8_t reg) {
@@ -191,17 +268,26 @@ void processor_Fx1E_addi(struct Processor* processor, uint8_t reg) {
 }
 
 void processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
-    // TODO pas d'écran
+    processor->I = 431 + reg * 5;
 }
 
 void processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
-    // TODO
+    int carry = 0;
+    for (int i = 0; i < 3; i++) {
+        int nb = (processor->regV[reg] - carry) / 10^(3-i);
+        processor->RAM->memory[processor->I+i] = nb;
+        carry = nb * 10^(3-i);
+    }
 }
 
 void processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
-    // TODO
+    for(int i = 0; i < reg; i++) {
+        processor->RAM->memory[processor->I+i] = processor->regV[i];
+    }
 }
 
 void processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
-    // TODO
+    for(int i = 0; i < reg; i++) {
+        processor->regV[i] = processor->RAM->memory[processor->I+i];
+    }
 }
