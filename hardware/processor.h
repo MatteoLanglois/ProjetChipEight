@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include "memory.h"
 #include "../libprovided/include/display/display.h"
 #include "../libprovided/include/display/sprite.h"
@@ -92,23 +92,78 @@ struct Processor* Proc_init();
 
 /**
  * \relates Processor
- * \fn void Proc_delete(struct Processor* processor)
+ * \fn void Proc_destroy(struct Processor* processor)
  * \brief Fonction de destruction du processeur.
  *
  * @param processor Le processeur à détruire.
  */
-void Proc_delete(struct Processor* processor);
+void Proc_destroy(struct Processor* processor);
+
+/**
+ * \relates Processor
+ * \fn void puiss(int num, int exp)
+ * \brief Fonction de puissance.
+ *
+ * @param num le nombre à mettre à la puissance exp.
+ * @param exp l'exposant.
+ */
+int puiss(int num, int exp);
+
+/**
+ * \relates Processor
+ * \fn void processor_instruc_0(char* instruc)
+ * \brief Fonction transformant la chaine de charactère hexadecimal en un nombre décimal.
+ *
+ * @param instruc la chaine de caractère à traduire.
+ */
+void hexa_to_deci(char* instruc);
 
 // FetchDecodeExecute
 
 /**
  * \relates Processor
  * \fn void processor_fetch_decode_execute()
- * \brief Fonction
+ * \brief Fonction réalisant une itération de fetch decode execute
  *
  * @param instruction l'instruction à récupérer, décoder et exécuter
  */
 void processor_fetch_decode_execute(struct Processor* processor);
+
+/**
+ * \relates Processor
+ * \fn void processor_instruc_0(char* instruc)
+ * \brief Fonction décodant les instructions commençant par 0.
+ *
+ * @param instruc l'instruction à décoder puis exécuter.
+ */
+void processor_instruc_0(struct Processor* processor, char* instruc);
+
+/**
+ * \relates Processor
+ * \fn void processor_instruc_8(char* instruc)
+ * \brief Fonction décodant les instructions commençant par 8.
+ *
+ * @param instruc l'instruction à décoder puis exécuter.
+ */
+void processor_instruc_8(struct Processor* processor, char* instruc);
+
+/**
+ * \relates Processor
+ * \fn void processor_instruc_E(char* instruc)
+ * \brief Fonction décodant les instructions commençant par E.
+ *
+ * @param instruc l'instruction à décoder puis exécuter.
+ */
+void processor_instruc_E(struct Processor* processor, char* instruc);
+
+/**
+ * \relates Processor
+ * \fn void processor_instruc_F(char* instruc)
+ * \brief Fonction décodant les instructions commençant par F.
+ *
+ * @param instruc l'instruction à décoder puis exécuter.
+ */
+void processor_instruc_F(struct Processor* processor, char* instruc);
 
 // Load sprite in memory
 void load_sprite(struct Processor* processor);
@@ -426,9 +481,10 @@ void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
  *
  * // Traduire paragraphe
  *
- * @param processor
- * @param reg1
- * @param reg2
+ * @param processor Le processeur
+ * @param reg1 Le registre qui contient la position x du sprite.
+ * @param reg2 Le registre qui contient la position y du sprite.
+ * @param nibble Le nombre de byte à afficher.
  */
 void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble);

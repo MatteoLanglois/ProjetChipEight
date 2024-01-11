@@ -11,13 +11,6 @@ struct Processor* Proc_init() {
         return NULL;
     }
 
-    processor->RAM = RAM_init();
-    if (processor->RAM == NULL) {
-        free(processor->stack);
-        free(processor);
-        return NULL;
-    }
-
     if (Display_init(processor->display, 0) == 1) {
         free(processor->stack);
         free(processor->RAM);
@@ -32,25 +25,203 @@ struct Processor* Proc_init() {
     return processor;
 }
 
-void Proc_delete(struct Processor* processor) {
+void Proc_destroy(struct Processor* processor) {
     free(processor->stack);
     free(processor);
+}
+
+int puiss(int num, int exp){
+    int ans = 1;
+    for (int i = 0; i < exp; i ++){
+        ans = num * ans;
+    }
+    return ans;
+}
+
+int hexa_to_int(char* instruc) {
+    int num = 0;
+    int len = strlen(instruc);
+    int i = len - 1;
+    while (i >= 0) {
+        switch (instruc[i]) {
+            case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+            case '8': case '9':
+                num = num + (instruc[i] - '0') * (puiss(16, len - 1 - i));
+                break;
+            case 'A':
+                num = num + (10) * (puiss(16, len - 1 - i));
+                break;
+            case 'B':
+                num = num + (11) * (puiss(16, len - 1 - i));
+                break;
+            case 'C':
+                num = num + (12) * (puiss(16, len - 1 - i));
+                break;
+            case 'D':
+                num = num + (13) * (puiss(16, len - 1 - i));
+                break;
+            case 'E':
+                num = num + (14) * (puiss(16, len - 1 - i));
+                break;
+            case 'F':
+                num = num + (15) * (puiss(16, len - 1 - i));
+                break;
+        }
+        i--;
+    }
+    return num;
 }
 
 // Fetch Decode execute
 
 void processor_fetch_decode_execute(struct Processor* processor) {
     // fetch
-    uint8_t instruc = processor->RAM->memory[processor->programCounter];
-
-    // decode
-
-
-    // execute
-
-
+    char* instruc = (char *) &processor->RAM->memory[processor->programCounter];
+    strcat(instruc, (char *) &processor->RAM->memory[processor->programCounter + 1]);
+    // decode & execute
+    uint8_t* val;
+    uint16_t* addr;
+    switch (instruc[0]) {
+        case '0':
+            processor_instruc_0(processor, instruc);
+            break;
+        case '1':
+            processor_1nnn_jp(processor, hexa_to_int(instruc+1));
+            break;
+        case '2':
+            processor_2nnn_call(processor, hexa_to_int(instruc+1));
+            break;
+        case '3':
+            processor_3xkk_se(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
+            break;
+        case '4':
+            processor_4xkk_sne(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
+            break;
+        case '5':
+            processor_5xy0_sereg(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]));
+            break;
+        case '6':
+            processor_6xkk_ldval(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
+            break;
+        case '7':
+            processor_7xkk_add(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
+            break;
+        case '8':
+            processor_instruc_8(processor, instruc);
+            break;
+        case '9':
+            processor_9xy0_sne_reg(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]));
+            break;
+        case 'A':
+            processor_Annn_ldi(processor, hexa_to_int(instruc+1));
+            break;
+        case 'B':
+            processor_Bnnn_jpv0(processor, hexa_to_int(instruc+1));
+            break;
+        case 'C':
+            processor_Cxkk_rnd(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
+            break;
+        case 'D':
+            processor_Dxyn_drw(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]), (uint8_t)hexa_to_int(&instruc[3]));
+            break;
+        case 'E':
+            processor_instruc_E(processor, instruc);
+            break;
+        case 'F':
+            processor_instruc_F(processor, instruc);
+        default:
+            processor->programCounter++;
+    }
 }
 
+void processor_instruc_0(struct Processor* processor, char* instruc) {
+    uint8_t* val;
+    uint16_t* addr;
+    if (strcmp(instruc, "00E0") != 0) {
+        processor_00e0_cls(processor);
+    } else if (strcmp(instruc, "00EE") != 0) {
+        processor_00ee_ret(processor);
+    } else {
+        processor_0nnn_sys(processor, hexa_to_int(instruc+1));
+    }
+}
+
+void processor_instruc_8(struct Processor* processor, char* instruc) {
+    uint8_t reg1 = hexa_to_int(&instruc[1]);
+    uint8_t reg2 = hexa_to_int(&instruc[2]);
+    switch (instruc[3]) {
+        case '0':
+            processor_8xy0_ldreg(processor, reg1, reg2);
+            break;
+        case '1':
+            processor_8xy1_or(processor, reg1, reg2);
+            break;
+        case '2':
+            processor_8xy2_and(processor, reg1, reg2);
+            break;
+        case '3':
+            processor_8xy3_xor(processor, reg1, reg2);
+            break;
+        case '4':
+            processor_8xy4_addc(processor, reg1, reg2);
+            break;
+        case '5':
+            processor_8xy5_sub(processor, reg1, reg2);
+            break;
+        case '6':
+            processor_8xy6_shr(processor, reg1);
+            break;
+        case '7':
+            processor_8xy7_subn(processor, reg1, reg2);
+            break;
+        case 'E':
+            processor_8xyE_shl(processor, reg1);
+            break;
+    }
+}
+
+void processor_instruc_E(struct Processor* processor, char* instruc) {
+    if (strcmp(instruc+2, "9E") != 0) {
+        processor_Ex9E_skp(processor, (uint8_t)hexa_to_int(&instruc[1]));
+    } else {
+        processor_ExA1_sknp(processor, (uint8_t)hexa_to_int(&instruc[1]));
+    }
+}
+
+void processor_instruc_F(struct Processor* processor, char* instruc) {
+    uint8_t reg = hexa_to_int(&instruc[1]);
+    switch (instruc[3]) {
+        case '5':
+            if (instruc[2] == '1') {
+                processor_Fx15_lddt2(processor, reg);
+            }
+            else if (instruc[2] == '5'){
+                processor_Fx55_ldw(processor, reg);
+            }
+            else{
+                processor_Fx65_ldr(processor, reg);
+            }
+            break;
+        case '7':
+            processor_Fx07_lddt(processor, reg);
+            break;
+        case 'A':
+            processor_Fx0A_ldvk(processor, reg);
+            break;
+        case '8':
+            processor_Fx18_ldst(processor, reg);
+            break;
+        case 'E':
+            processor_Fx1E_addi(processor, reg);
+            break;
+        case '9':
+            processor_Fx29_ldf(processor, reg);
+            break;
+        case '3':
+            processor_Fx33_ldb(processor, reg);
+            break;
+        }
+}
 
 // Load Sprite in memory
 
@@ -259,7 +430,7 @@ void processor_Fx15_lddt2(struct Processor* processor, uint8_t reg) {
     processor->DT = processor->regV[reg];
 }
 
-void processor_Fx18ldst(struct Processor* processor, uint8_t reg) {
+void processor_Fx18_ldst(struct Processor* processor, uint8_t reg) {
     processor->ST = processor->regV[reg];
 }
 

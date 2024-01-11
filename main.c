@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "chip8.h"
 
 int main()
 {
-    unsigned int* memory = malloc(4096 * sizeof(unsigned int));
-    free(memory);
+    chip8_init();
 }
