@@ -1,26 +1,22 @@
 #include "processor.h"
 
-struct Processor* Proc_init() {
+struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
+        struct RandomAccessMemory* RAM, struct Speaker* speaker) {
     struct Processor* processor = malloc(sizeof(struct Processor));
     if (processor == NULL) {
+        printf("Erreur lors de l'initialisation du processeur");
         return NULL;
     }
     processor->stack = malloc(16 * 16);
     if (processor->stack == NULL) {
         free(processor);
-        return NULL;
-    }
-
-    if (Display_init(processor->display, 0) == 1) {
-        free(processor->stack);
-        free(processor->RAM);
-        free(processor);
+        printf("Erreur lors de l'initialisation de la pile");
         return NULL;
     }
 
     load_sprite(processor);
 
-    processor->programCounter = 200;
+    processor->programCounter = 512;
 
     return processor;
 }
@@ -66,6 +62,8 @@ int hexa_to_int(char* instruc) {
             case 'F':
                 num = num + (15) * (puiss(16, len - 1 - i));
                 break;
+            default:
+                
         }
         i--;
     }
@@ -76,73 +74,37 @@ int hexa_to_int(char* instruc) {
 
 void processor_fetch_decode_execute(struct Processor* processor) {
     // fetch
-    char* instruc = (char *) &processor->RAM->memory[processor->programCounter];
-    strcat(instruc, (char *) &processor->RAM->memory[processor->programCounter + 1]);
+    // Get the instruction in the memory
+    uint32_t instruc = processor->RAM->memory[processor->programCounter] + processor->RAM->memory[processor->programCounter + 1];
     // decode & execute
-    uint8_t* val;
-    uint16_t* addr;
-    switch (instruc[0]) {
-        case '0':
-            processor_instruc_0(processor, instruc);
-            break;
-        case '1':
-            processor_1nnn_jp(processor, hexa_to_int(instruc+1));
-            break;
-        case '2':
-            processor_2nnn_call(processor, hexa_to_int(instruc+1));
-            break;
-        case '3':
-            processor_3xkk_se(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
-            break;
-        case '4':
-            processor_4xkk_sne(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
-            break;
-        case '5':
-            processor_5xy0_sereg(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]));
-            break;
-        case '6':
-            processor_6xkk_ldval(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
-            break;
-        case '7':
-            processor_7xkk_add(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
-            break;
-        case '8':
-            processor_instruc_8(processor, instruc);
-            break;
-        case '9':
-            processor_9xy0_sne_reg(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]));
-            break;
-        case 'A':
-            processor_Annn_ldi(processor, hexa_to_int(instruc+1));
-            break;
-        case 'B':
-            processor_Bnnn_jpv0(processor, hexa_to_int(instruc+1));
-            break;
-        case 'C':
-            processor_Cxkk_rnd(processor, (uint8_t)hexa_to_int(&instruc[1]), hexa_to_int(instruc+2));
-            break;
-        case 'D':
-            processor_Dxyn_drw(processor, (uint8_t)hexa_to_int(&instruc[1]), (uint8_t)hexa_to_int(&instruc[2]), (uint8_t)hexa_to_int(&instruc[3]));
-            break;
-        case 'E':
-            processor_instruc_E(processor, instruc);
-            break;
-        case 'F':
-            processor_instruc_F(processor, instruc);
-        default:
-            processor->programCounter++;
-    }
-}
-
-void processor_instruc_0(struct Processor* processor, char* instruc) {
-    uint8_t* val;
-    uint16_t* addr;
-    if (strcmp(instruc, "00E0") != 0) {
+    if (instruc & 0xF000 == 0) {
+        processor_0nnn_sys(processor, instruc);
+    } else if (instruc & 0xF000 == 0x00E0) {
         processor_00e0_cls(processor);
-    } else if (strcmp(instruc, "00EE") != 0) {
+    } else if (instruc & 0xF000 == 0x00EE) {
         processor_00ee_ret(processor);
-    } else {
-        processor_0nnn_sys(processor, hexa_to_int(instruc+1));
+    } else if (instruc & 0xF000 == 1000) {
+        processor_1nnn_jp(processor, instruc & 0x0FFF);
+    } else if (instruc & 0xF000 == 2000) {
+        processor_2nnn_call(processor, instruc & 0x0FFF);
+    } else if (instruc & 0xF000 == 3000) {
+        processor_3xkk_se(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
+    } else if (instruc & 0xF000 == 4000) {
+        processor_4xkk_sne(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
+    } else if (instruc & 0xF000 == 5000) {
+        processor_5xy0_sereg(processor, (instruc & 0x0F00) >> 8, (instruc & 0x00F0) >> 4);
+    } else if (instruc & 0xF000 == 6000) {
+        processor_6xkk_ldval(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
+    } else if (instruc & 0xF000 == 7000) {
+        processor_7xkk_add(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
+    } else if (instruc & 0xF000 == 9000) {
+        processor_9xy0_sne_reg(processor, (instruc & 0x0F00) >> 8, (instruc & 0x00F0) >> 4);
+    } else if (instruc & 0xF000 == 0xA000) {
+        processor_Annn_ldi(processor, instruc & 0x0FFF);
+    } else if (instruc & 0xF000 == 0xB000) {
+        processor_Bnnn_jpv0(processor, instruc & 0x0FFF);
+    } else if (instruc & 0xF000 == 0xC000) {
+        processor_Cxkk_rnd(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
     }
 }
 

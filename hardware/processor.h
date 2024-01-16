@@ -86,9 +86,14 @@ struct Processor {
  * \fn struct Processor* Proc_init()
  * \brief Fonction d'initialisation du processeur.
  *
+ * @param display L'écran de la machine.
+ * @param keyboard Le clavier de la machine.
+ * @param RAM La mémoire vive de la machine.
+ * @param speaker Le haut-parleur de la machine.
  * @return Un pointeur vers le processeur initialisé.
  */
-struct Processor* Proc_init();
+struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
+        struct RandomAccessMemory* RAM, struct Speaker* speaker);
 
 /**
  * \relates Processor
@@ -125,18 +130,9 @@ void hexa_to_deci(char* instruc);
  * \fn void processor_fetch_decode_execute()
  * \brief Fonction réalisant une itération de fetch decode execute
  *
- * @param instruction l'instruction à récupérer, décoder et exécuter
+ * @param processor Le processeur.
  */
 void processor_fetch_decode_execute(struct Processor* processor);
-
-/**
- * \relates Processor
- * \fn void processor_instruc_0(char* instruc)
- * \brief Fonction décodant les instructions commençant par 0.
- *
- * @param instruc l'instruction à décoder puis exécuter.
- */
-void processor_instruc_0(struct Processor* processor, char* instruc);
 
 /**
  * \relates Processor

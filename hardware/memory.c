@@ -1,11 +1,11 @@
 #include "memory.h"
 
-struct RandomAccessMemory* initMemory(){
+struct RandomAccessMemory* RAM_init(){
   struct RandomAccessMemory* memory = malloc(sizeof(struct RandomAccessMemory));
   if (memory == NULL){
     return NULL;
   }
-  memory->memory = malloc(4096 * sizeof(uint8_t));
+  memory->memory = malloc(RAM_max * sizeof(uint8_t));
   if (memory->memory == NULL){
     free(memory);
     return NULL;
@@ -13,21 +13,21 @@ struct RandomAccessMemory* initMemory(){
   return memory;
 }
 
-uint8_t readMemory(const struct RandomAccessMemory* memory, uint16_t addr){
-  if (addr < 4096){
+uint8_t RAM_read(struct RandomAccessMemory* memory, uint16_t addr){
+  if (addr < RAM_max){
     return memory->memory[addr];
   }
   return -1;
 }
 
-int writeMemory(struct RandomAccessMemory* memory, uint16_t addr, const uint8_t newVal) {
+int RAM_write(struct RandomAccessMemory* memory, uint16_t addr, const uint8_t newVal) {
   if (addr <= 4096) {
     memory->memory[addr] = newVal;
   }
   return 0;
 }
 
-int freeMemory(struct RandomAccessMemory* memory){
+int RAM_destroy(struct RandomAccessMemory* memory){
   free(memory->memory);
   return 0;
 }

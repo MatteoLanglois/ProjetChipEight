@@ -43,7 +43,7 @@ struct RandomAccessMemory* RAM_init();
  * @param addr L'adresse à laquelle on veut lire.
  * @return La valeur contenue à l'adresse addr.
  */
-unsigned int RAM_read(const unsigned int* memory, uint16_t addr);
+uint8_t RAM_read(struct RandomAccessMemory* memory, uint16_t addr);
 
 /**
  * \relates RandomAccessMemory
