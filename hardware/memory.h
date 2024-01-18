@@ -22,7 +22,7 @@ struct RandomAccessMemory {
      * \brief Un tableau de 4096 octets représentant la mémoire vive de la
      * machine.
      */
-    uint8_t* memory;
+    uint8_t memory[RAM_max];
 };
 
 /**

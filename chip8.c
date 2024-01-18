@@ -31,8 +31,6 @@ void chip8_init() {
             printf("Erreur lors de l'initialisation du haut-parleur");
             exit(1);
         }
-        chip8_load(chip8, "/home/mlanglois/Documents/ProjetChipEight/rom/Airplane.ch8");
-        chip8_cycle(chip8);
 
         chip8->processor = Proc_init(chip8->display, chip8->keyboard, chip8->RAM,
                                      chip8->speaker);
@@ -40,6 +38,14 @@ void chip8_init() {
             printf("Erreur lors de l'initialisation du processeur");
             exit(1);
         }
+
+
+        chip8_load(chip8, "/home/mlanglois/Documents/ProjetChipEight/rom/Airplane.ch8");
+        chip8_cycle(chip8);
+    }
+    if (errcode != QUIT) {
+            fprintf(stderr,"The program has terminated abnormally (errcode=%s)\n",errorstr());
+            exit(1);
     }
 }
 
@@ -61,17 +67,18 @@ void chip8_load(struct chip8* chip8, const char* path) {
     }
 
     // Lire le fichier
-    uint16_t address = 512;
-    char* buffer = malloc(sizeof(char) * 2);
-    while (fread(buffer, 2, 1, rom) == 1) {
-        RAM_write(chip8->RAM, address, strtol(buffer, NULL, 16));
-        address += 2;
+    uint16_t address = 511;
+    uint8_t* buffer = malloc(sizeof(uint8_t));
+    while (fread(buffer, 1, 1, rom) == 1) {
+        char* pass;
+        sprintf(pass, "%02X", *buffer);
+        RAM_write(chip8->RAM, address, (uint8_t) strtol(pass, NULL, 16));
+        address++;
     }
     free(buffer);
 
     // Fermer le fichier
     fclose(rom);
-
 }
 
 // Viser 500Hz

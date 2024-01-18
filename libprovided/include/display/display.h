@@ -52,6 +52,8 @@ struct Display {
         SDL_Window* window;
 
         /**
+         *
+         *
          * The underlying SDL renderer.
          */
         SDL_Renderer* renderer;

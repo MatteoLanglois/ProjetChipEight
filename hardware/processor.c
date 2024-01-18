@@ -13,10 +13,19 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
         printf("Erreur lors de l'initialisation de la pile");
         return NULL;
     }
+    for (int i = 0; i < 16; i++) {
+        processor->stack[i] = 0;
+    }
+
+    processor->RAM = RAM;
+    processor->display = display;
+    processor->keyboard = keyboard;
+    processor->speaker = speaker;
 
     load_sprite(processor);
 
-    processor->programCounter = 512;
+    processor->programCounter = 511;
+    processor->SP = 0;
 
     return processor;
 }
@@ -26,186 +35,116 @@ void Proc_destroy(struct Processor* processor) {
     free(processor);
 }
 
-int puiss(int num, int exp){
-    int ans = 1;
-    for (int i = 0; i < exp; i ++){
-        ans = num * ans;
-    }
-    return ans;
-}
-
-int hexa_to_int(char* instruc) {
-    int num = 0;
-    int len = strlen(instruc);
-    int i = len - 1;
-    while (i >= 0) {
-        switch (instruc[i]) {
-            case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-            case '8': case '9':
-                num = num + (instruc[i] - '0') * (puiss(16, len - 1 - i));
-                break;
-            case 'A':
-                num = num + (10) * (puiss(16, len - 1 - i));
-                break;
-            case 'B':
-                num = num + (11) * (puiss(16, len - 1 - i));
-                break;
-            case 'C':
-                num = num + (12) * (puiss(16, len - 1 - i));
-                break;
-            case 'D':
-                num = num + (13) * (puiss(16, len - 1 - i));
-                break;
-            case 'E':
-                num = num + (14) * (puiss(16, len - 1 - i));
-                break;
-            case 'F':
-                num = num + (15) * (puiss(16, len - 1 - i));
-                break;
-            default:
-                
-        }
-        i--;
-    }
-    return num;
-}
-
 // Fetch Decode execute
 
 void processor_fetch_decode_execute(struct Processor* processor) {
     // fetch
     // Get the instruction in the memory
-    uint32_t instruc = processor->RAM->memory[processor->programCounter] + processor->RAM->memory[processor->programCounter + 1];
+
+    uint8_t part1 = RAM_read(processor->RAM, processor->programCounter);
+    uint8_t part2 = RAM_read(processor->RAM, processor->programCounter + 1);
+    uint16_t instruction = part1 << 8;
+    instruction += part2;
+    // Increment the program counter
+    processor->programCounter += 2;
     // decode & execute
-    if (instruc & 0xF000 == 0) {
-        processor_0nnn_sys(processor, instruc);
-    } else if (instruc & 0xF000 == 0x00E0) {
+    if ((instruction & 0x00F0) == 0x00E0) {
         processor_00e0_cls(processor);
-    } else if (instruc & 0xF000 == 0x00EE) {
+    } else if ((instruction & 0x00FF) == 0x00EE) {
         processor_00ee_ret(processor);
-    } else if (instruc & 0xF000 == 1000) {
-        processor_1nnn_jp(processor, instruc & 0x0FFF);
-    } else if (instruc & 0xF000 == 2000) {
-        processor_2nnn_call(processor, instruc & 0x0FFF);
-    } else if (instruc & 0xF000 == 3000) {
-        processor_3xkk_se(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
-    } else if (instruc & 0xF000 == 4000) {
-        processor_4xkk_sne(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
-    } else if (instruc & 0xF000 == 5000) {
-        processor_5xy0_sereg(processor, (instruc & 0x0F00) >> 8, (instruc & 0x00F0) >> 4);
-    } else if (instruc & 0xF000 == 6000) {
-        processor_6xkk_ldval(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
-    } else if (instruc & 0xF000 == 7000) {
-        processor_7xkk_add(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
-    } else if (instruc & 0xF000 == 9000) {
-        processor_9xy0_sne_reg(processor, (instruc & 0x0F00) >> 8, (instruc & 0x00F0) >> 4);
-    } else if (instruc & 0xF000 == 0xA000) {
-        processor_Annn_ldi(processor, instruc & 0x0FFF);
-    } else if (instruc & 0xF000 == 0xB000) {
-        processor_Bnnn_jpv0(processor, instruc & 0x0FFF);
-    } else if (instruc & 0xF000 == 0xC000) {
-        processor_Cxkk_rnd(processor, (instruc & 0x0F00) >> 8, instruc & 0x00FF);
-    }
-}
-
-void processor_instruc_8(struct Processor* processor, char* instruc) {
-    uint8_t reg1 = hexa_to_int(&instruc[1]);
-    uint8_t reg2 = hexa_to_int(&instruc[2]);
-    switch (instruc[3]) {
-        case '0':
-            processor_8xy0_ldreg(processor, reg1, reg2);
-            break;
-        case '1':
-            processor_8xy1_or(processor, reg1, reg2);
-            break;
-        case '2':
-            processor_8xy2_and(processor, reg1, reg2);
-            break;
-        case '3':
-            processor_8xy3_xor(processor, reg1, reg2);
-            break;
-        case '4':
-            processor_8xy4_addc(processor, reg1, reg2);
-            break;
-        case '5':
-            processor_8xy5_sub(processor, reg1, reg2);
-            break;
-        case '6':
-            processor_8xy6_shr(processor, reg1);
-            break;
-        case '7':
-            processor_8xy7_subn(processor, reg1, reg2);
-            break;
-        case 'E':
-            processor_8xyE_shl(processor, reg1);
-            break;
-    }
-}
-
-void processor_instruc_E(struct Processor* processor, char* instruc) {
-    if (strcmp(instruc+2, "9E") != 0) {
-        processor_Ex9E_skp(processor, (uint8_t)hexa_to_int(&instruc[1]));
+    } else if ((instruction & 0xF000) == 0) {
+        processor_0nnn_sys(processor, instruction);
+    } else if ((instruction & 0xF000) == 0x1000) {
+        processor_1nnn_jp(processor, instruction & 0x0FFF);
+    } else if ((instruction & 0xF000) == 0x2000) {
+        processor_2nnn_call(processor, instruction & 0x0FFF);
+    } else if ((instruction & 0xF000) == 0x3000) {
+        processor_3xkk_se(processor, (instruction & 0x0F00) >> 8, instruction & 0x00FF);
+    } else if ((instruction & 0xF000) == 0x4000) {
+        processor_4xkk_sne(processor, (instruction & 0x0F00) >> 8, instruction & 0x00FF);
+    } else if ((instruction & 0xF000) == 0x5000) {
+        processor_5xy0_sereg(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF000) == 0x6000) {
+        processor_6xkk_ldval(processor, (instruction & 0x0F00) >> 8, instruction & 0x00FF);
+    } else if ((instruction & 0xF000) == 0x7000) {
+        processor_7xkk_add(processor, (instruction & 0x0F00) >> 8, instruction & 0x00FF);
+    } else if ((instruction & 0xF00F) == 0x8000) {
+        processor_8xy0_ldreg(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8001) {
+        processor_8xy1_or(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8002) {
+        processor_8xy2_and(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8003) {
+        processor_8xy3_xor(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8004) {
+        processor_8xy4_addc(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8005) {
+        processor_8xy5_sub(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x8006) {
+        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF00F) == 0x8007) {
+        processor_8xy7_subn(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF00F) == 0x800E) {
+        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF00F ) == 0x9000) {
+        processor_9xy0_sne_reg(processor, (instruction & 0x0F00) >> 8, (instruction & 0x00F0) >> 4);
+    } else if ((instruction & 0xF000) == 0xA000) {
+        processor_Annn_ldi(processor, instruction & 0x0FFF);
+    } else if ((instruction & 0xF000) == 0xB000) {
+        processor_Bnnn_jpv0(processor, instruction & 0x0FFF);
+    } else if ((instruction & 0xF000) == 0xC000) {
+        processor_Cxkk_rnd(processor, (instruction & 0x0F00) >> 8,
+                           instruction & 0x00FF);
+    } else if ((instruction & 0xF000) == 0xD000) {
+        processor_Dxyn_drw(processor, (instruction & 0x0F00) >> 8,
+                           (instruction & 0x00F0) >> 4, instruction & 0x000F);
+    } else if ((instruction & 0xF0FF) == 0xE09E) {
+        processor_Ex9E_skp(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xE0A1) {
+        processor_ExA1_sknp(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF015) {
+        processor_Fx15_lddt2(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF055) {
+        processor_Fx55_ldw(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF065) {
+        processor_Fx65_ldr(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF007) {
+        processor_Fx07_lddt(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF00A) {
+        processor_Fx0A_ldvk(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF018) {
+        processor_Fx18_ldst(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF01E) {
+        processor_Fx1E_addi(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF029) {
+        processor_Fx29_ldf(processor, (instruction & 0x0F00) >> 8);
+    } else if ((instruction & 0xF0FF) == 0xF033) {
+        processor_Fx33_ldb(processor, (instruction & 0x0F00) >> 8);
     } else {
-        processor_ExA1_sknp(processor, (uint8_t)hexa_to_int(&instruc[1]));
+        printf("Erreur lors de l'execution de l'instruction");
+        exit(1);
     }
-}
-
-void processor_instruc_F(struct Processor* processor, char* instruc) {
-    uint8_t reg = hexa_to_int(&instruc[1]);
-    switch (instruc[3]) {
-        case '5':
-            if (instruc[2] == '1') {
-                processor_Fx15_lddt2(processor, reg);
-            }
-            else if (instruc[2] == '5'){
-                processor_Fx55_ldw(processor, reg);
-            }
-            else{
-                processor_Fx65_ldr(processor, reg);
-            }
-            break;
-        case '7':
-            processor_Fx07_lddt(processor, reg);
-            break;
-        case 'A':
-            processor_Fx0A_ldvk(processor, reg);
-            break;
-        case '8':
-            processor_Fx18_ldst(processor, reg);
-            break;
-        case 'E':
-            processor_Fx1E_addi(processor, reg);
-            break;
-        case '9':
-            processor_Fx29_ldf(processor, reg);
-            break;
-        case '3':
-            processor_Fx33_ldb(processor, reg);
-            break;
-        }
 }
 
 // Load Sprite in memory
 
 void load_sprite(struct Processor* processor) {
-    struct Sprite* sprite;
-    Sprite_init(sprite, 40);
-    int spriteList[16][5] = {{240, 144, 144, 144, 240}, // 0
-                             {32, 96, 32, 32, 112}, // 1
-                             {240, 16, 240, 128, 240}, // 2
-                             {240, 16, 240, 16, 240}, // 3
-                             {144, 144, 240, 16, 16}, // 4
-                             {240, 128, 240, 16, 240}, // 5
-                             {240, 128, 240, 144, 240}, // 6
-                             {240, 16, 32, 64, 64}, // 7
-                             {240, 144, 240, 144, 240}, // 8
-                             {240, 144, 240, 16, 240}, // 9
-                             {240, 144, 240, 144, 144}, // A
-                             {224, 144, 224, 144, 224}, // B
-                             {240, 128, 128, 128, 240}, // C
-                             {224, 144, 144, 144, 224}, //D
-                             {240, 128, 240, 128, 240}, // E
-                             {240, 128, 240, 128, 128}}; // F
+    int spriteList[16][5] = {{0x00F0, 0x0090, 0x0090, 0x0090, 0x00F0}, // 0
+                             {0x0020, 0x0060, 0x0020, 0x0020, 0x0070}, // 1
+                             {0x00F0, 0x0010, 0x00F0, 0x0080, 0x00F0}, // 2
+                             {0x00F0, 0x0010, 0x00F0, 0x0010, 0x00F0}, // 3
+                             {0x0090, 0x0090, 0x00F0, 0x0010, 0x0010}, // 4
+                             {0x00F0, 0x0080, 0x00F0, 0x0010, 0x00F0}, // 5
+                             {0x00F0, 0x0080, 0x00F0, 0x0090, 0x00F0}, // 6
+                             {0x00F0, 0x0010, 0x0020, 0x0040, 0x0040}, // 7
+                             {0x00F0, 0x0090, 0x00F0, 0x0090, 0x00F0}, // 8
+                             {0x00F0, 0x0090, 0x00F0, 0x0010, 0x00F0}, // 9
+                             {0x00F0, 0x0090, 0x00F0, 0x0090, 0x0090}, // A
+                             {0x00E0, 0x0090, 0x00E0, 0x0090, 0x00E0}, // B
+                             {0x00F0, 0x0080, 0x0080, 0x0080, 0x00F0}, // C
+                             {0x00E0, 0x0090, 0x0090, 0x0090, 0x00E0}, //D
+                             {0x00F0, 0x0080, 0x00F0, 0x0080, 0x00F0}, // E
+                             {0x00F0, 0x0080, 0x00F0, 0x0080, 0x0080}}; // F
 
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 5; j++) {
@@ -234,9 +173,11 @@ void processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_2nnn_call(struct Processor* processor, uint16_t addr) {
+    printf("%d", processor->SP);
     processor->SP++;
     processor->stack[processor->SP] = processor->programCounter;
     processor->SP--;
+    processor->programCounter = addr;
 }
 
 void processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
@@ -357,7 +298,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
     struct Sprite* sprite;
-    Sprite_init(sprite, 0);
+    Sprite_init(sprite, 40);
     // On reconstruit le sprite
     for (uint16_t i = processor->I; i < processor->I + nibble; i++) {
         Sprite_add(sprite, processor->RAM->memory[i]);

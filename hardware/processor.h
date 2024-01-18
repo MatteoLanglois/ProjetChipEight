@@ -77,6 +77,12 @@ struct Processor {
      * machine
      */
     struct Keyboard* keyboard;
+
+    /**
+     * \brief un pointeur vers la structure speaker représentant le
+     * haut-parleur de la machine
+     */
+    struct Speaker* speaker;
 };
 
 // Gestion du processeur

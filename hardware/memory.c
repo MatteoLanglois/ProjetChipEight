@@ -5,11 +5,11 @@ struct RandomAccessMemory* RAM_init(){
   if (memory == NULL){
     return NULL;
   }
-  memory->memory = malloc(RAM_max * sizeof(uint8_t));
-  if (memory->memory == NULL){
-    free(memory);
-    return NULL;
+
+  for(int i = 0; i < RAM_max; i++){
+    memory->memory[i] = 0;
   }
+
   return memory;
 }
 
