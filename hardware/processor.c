@@ -297,16 +297,17 @@ void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
 void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
-    struct Sprite* sprite;
-    Sprite_init(sprite, 40);
+    struct Sprite sprite;
+    Sprite_init(&sprite, nibble);
     // On reconstruit le sprite
     for (uint16_t i = processor->I; i < processor->I + nibble; i++) {
-        Sprite_add(sprite, processor->RAM->memory[i]);
+        Sprite_add(&sprite, processor->RAM->memory[i]);
     }
     // On appelle la fonction DRW
-    Display_DRW(processor->display, sprite,
+    Display_DRW(processor->display, &sprite,
                 processor->regV[reg1], processor->regV[reg2],
                 &processor->regV[15]);
+    Sprite_destroy(&sprite);
 }
 
 void processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {

@@ -40,7 +40,7 @@ void chip8_init() {
         }
 
 
-        chip8_load(chip8, "/home/mlanglois/Documents/ProjetChipEight/rom/Airplane.ch8");
+        chip8_load(chip8, "/home/romain/Documents/projet\ c/projetchipeight/rom/IBMLogo.ch8");
         chip8_cycle(chip8);
     }
     if (errcode != QUIT) {
