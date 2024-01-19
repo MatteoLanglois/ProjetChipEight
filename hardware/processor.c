@@ -49,11 +49,9 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     // Increment the program counter
     processor->programCounter += 2;
     // decode & execute
-    if ((instruction & 0xFFFF) == 0x0000) {
-        return;
-    } else if ((instruction & 0x00F0) == 0x00E0) {
+    if (instruction == 0x00E0) {
         processor_00e0_cls(processor);
-    } else if ((instruction & 0x00FF) == 0x00EE) {
+    } else if (instruction == 0x00EE) {
         processor_00ee_ret(processor);
     } else if ((instruction & 0xF000) == 0) {
         processor_0nnn_sys(processor, instruction);
@@ -316,7 +314,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
     }
 
     // On appelle la fonction DRW
-    if (!Display_DRW(processor->display, &sprite,
+    if (Display_DRW(processor->display, &sprite,
                 processor->regV[reg1], processor->regV[reg2],
                 &processor->regV[15])) {
         printf("Erreur lors de l'affichage du sprite\n");
