@@ -56,7 +56,6 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     } else if ((instruction & 0x00FF) == 0x00EE) {
         processor_00ee_ret(processor);
     } else if ((instruction & 0xF000) == 0) {
-        printf("Instruction SYS\n");
         processor_0nnn_sys(processor, instruction);
     } else if ((instruction & 0xF000) == 0x1000) {
         processor_1nnn_jp(processor, instruction & 0x0FFF);
