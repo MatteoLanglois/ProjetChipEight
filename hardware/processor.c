@@ -26,6 +26,7 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
 
     processor->programCounter = 512;
     processor->SP = 0;
+    processor->I = 0;
 
     return processor;
 }
@@ -375,12 +376,12 @@ void processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
 
 void processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
-        processor->RAM->memory[processor->I+i] = processor->regV[i];
+        RAM_write(processor->RAM, processor->I+i, processor->regV[i]);
     }
 }
 
 void processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
-        processor->regV[i] = RAM_read(processor->RAM, processor->I + 1);
+        processor->regV[i] = RAM_read(processor->RAM, processor->I + i);
     }
 }
