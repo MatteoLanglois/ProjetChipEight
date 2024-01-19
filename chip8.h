@@ -19,7 +19,7 @@ struct chip8 {
     struct Speaker* speaker;
 };
 
-void chip8_init();
+void chip8_init(const char* path);
 void chip8_destroy(struct chip8* chip8);
 void chip8_load(struct chip8* chip8, const char* path);
 

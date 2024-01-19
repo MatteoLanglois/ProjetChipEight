@@ -1,6 +1,6 @@
 #include "chip8.h"
 
-void chip8_init() {
+void chip8_init(const char* path) {
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
         printf("Error initializing SDL: %s\n", SDL_GetError());
     } else {
@@ -52,7 +52,7 @@ void chip8_init() {
         }
 
 
-        chip8_load(chip8, "/home/mlanglois/Documents/ProjetChipEight/rom/Airplane.ch8");
+        chip8_load(chip8, path);
         chip8_cycle(chip8);
     }
     if (errcode != QUIT) {
