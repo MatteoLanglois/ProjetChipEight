@@ -521,7 +521,7 @@ void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
- * \fn void processor_Fx15_lddt2(struct Processor* processor, uint8_t reg);
+ * \fn void processor_Fx15_lddt(struct Processor* processor, uint8_t reg);
  * \brief Set DT = Vx
  *
  * La valeur de DT (delay timer) est remplacé par la valeur de reg
@@ -529,7 +529,7 @@ void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx15_lddt2(struct Processor* processor, uint8_t reg);
+void processor_Fx15_lddt(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor

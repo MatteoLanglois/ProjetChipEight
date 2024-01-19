@@ -104,7 +104,7 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     } else if ((instruction & 0xF0FF) == 0xE0A1) {
         processor_ExA1_sknp(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF015) {
-        processor_Fx15_lddt2(processor, (instruction & 0x0F00) >> 8);
+        processor_Fx15_lddt(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF055) {
         processor_Fx55_ldw(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF065) {
@@ -259,13 +259,13 @@ void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
 }
 
 void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    if ((int)processor->regV[reg2] > (int)processor->regV[reg1]){
-        processor->regV[15] = (uint8_t)1;
+    if (processor->regV[reg2] > processor->regV[reg1]){
+        processor->regV[15] = 1;
     }
     else {
-        processor->regV[15] = (uint8_t)0;
+        processor->regV[15] = 0;
     }
-    processor->regV[reg1] = (uint8_t)((int)processor->regV[reg1] - (int)processor->regV[reg2]);
+    processor->regV[reg1] = processor->regV[reg2] - processor->regV[reg1];
 }
 
 void processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
@@ -343,7 +343,7 @@ void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
 }
 
-void processor_Fx15_lddt2(struct Processor* processor, uint8_t reg) {
+void processor_Fx15_lddt(struct Processor* processor, uint8_t reg) {
     processor->DT = processor->regV[reg];
 }
 
@@ -360,22 +360,27 @@ void processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
 }
 
 void processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
-    int carry = 0;
-    for (int i = 0; i < 3; i++) {
-        int nb = (processor->regV[reg] - carry) / 10^(3-i);
-        processor->RAM->memory[processor->I+i] = nb;
-        carry = nb * 10^(3-i);
-    }
+    uint8_t value = processor->regV[reg];
+
+    // Les chiffres des centaines, des dizaines et des unités
+    uint8_t hundreds = value / 100;
+    uint8_t tens = (value / 10) % 10;
+    uint8_t ones = value % 10;
+
+    // Stocker les chiffres dans la mémoire à partir de l'emplacement I
+    processor->RAM->memory[processor->I] = hundreds;
+    processor->RAM->memory[processor->I + 1] = tens;
+    processor->RAM->memory[processor->I + 2] = ones;
 }
 
 void processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
-    for(int i = 0; i < reg; i++) {
+    for(int i = 0; i <= reg; i++) {
         processor->RAM->memory[processor->I+i] = processor->regV[i];
     }
 }
 
 void processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
-    for(int i = 0; i < reg; i++) {
-        processor->regV[i] = processor->RAM->memory[processor->I+i];
+    for(int i = 0; i <= reg; i++) {
+        processor->regV[i] = RAM_read(processor->RAM, processor->I + 1);
     }
 }
