@@ -224,28 +224,28 @@ void processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2)
 }
 
 void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    processor->regV[reg1] = (processor->regV[reg1] | processor->regV[reg2]) &
-            !(processor->regV[reg1] & processor->regV[reg2]);
+    processor->regV[reg1] = processor->regV[reg1] ^ processor->regV[reg2];
 }
 
 void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if ((int)processor->regV[reg1] + (int)processor->regV[reg2] > 255) {
         processor->regV[reg1] = (processor->regV[reg1] + processor->regV[reg2])
-                % 255;
+                % 256;
         processor->regV[15] = 1;
     } else {
-        processor_7xkk_add(processor, reg1, processor->regV[reg2]);
+        processor->regV[reg1] += processor->regV[reg2];
+        processor->regV[15] = 0;
     }
 }
 
 void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
-    if ((int)processor->regV[reg1] > (int)processor->regV[reg2]){
-        processor->regV[15] = (uint8_t)1;
+    if (processor->regV[reg1] > processor->regV[reg2]){
+        processor->regV[15] = 1;
     }
     else {
-        processor->regV[15] = (uint8_t)0;
+        processor->regV[15] = 0;
     }
-    processor->regV[reg1] = (uint8_t)((int)processor->regV[reg2] - (int)processor->regV[reg1]);
+    processor->regV[reg1] = processor->regV[reg1] - processor->regV[reg2];
 }
 
 void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
