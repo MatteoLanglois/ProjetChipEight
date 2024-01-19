@@ -303,10 +303,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
     struct Sprite sprite;
-    if (Sprite_init(&sprite, nibble)) {
-        printf("Erreur lors de l'initialisation du sprite\n");
-        return;
-    }
+    Sprite_init(&sprite, nibble);
 
     // On reconstruit le sprite
     for (uint16_t i = processor->I; i < processor->I + nibble; i++) {
@@ -315,11 +312,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
             Sprite_destroy(&sprite);
             return;
         }
-        if (!Sprite_add(&sprite, processor->RAM->memory[i])) {
-            printf("Erreur lors de l'ajout d'un élément au sprite\n");
-            Sprite_destroy(&sprite);
-            return;
-        }
+        Sprite_add(&sprite, processor->RAM->memory[i]);
     }
 
     // On appelle la fonction DRW
