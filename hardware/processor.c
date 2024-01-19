@@ -24,7 +24,7 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
 
     load_sprite(processor);
 
-    processor->programCounter = 511;
+    processor->programCounter = 512;
     processor->SP = 0;
 
     return processor;
@@ -56,6 +56,7 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     } else if ((instruction & 0x00FF) == 0x00EE) {
         processor_00ee_ret(processor);
     } else if ((instruction & 0xF000) == 0) {
+        printf("Instruction SYS\n");
         processor_0nnn_sys(processor, instruction);
     } else if ((instruction & 0xF000) == 0x1000) {
         processor_1nnn_jp(processor, instruction & 0x0FFF);
