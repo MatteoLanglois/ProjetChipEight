@@ -98,7 +98,6 @@ void chip8_load(struct chip8* chip8, const char* path) {
 void chip8_cycle(struct chip8* chip8) {
     uint running = 1;
     int cpt = 0;
-    Display_CLS(chip8->display);
     while (running) {
         processor_fetch_decode_execute(chip8->processor);
         if (cpt == 8) {
