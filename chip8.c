@@ -105,7 +105,7 @@ void chip8_cycle(struct chip8* chip8) {
             chip8_dec_timers(chip8);
             cpt = 0;
         }
-        SDL_Delay(2000);
+        SDL_Delay(200);
         cpt++;
     }
     chip8_destroy(chip8);

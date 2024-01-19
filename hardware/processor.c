@@ -45,7 +45,7 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     uint8_t part2 = RAM_read(processor->RAM, processor->programCounter + 1);
     uint16_t instruction = part1 << 8;
     instruction += part2;
-    printf("Commande: %X04\n",instruction);
+    printf("Commande: %X\n",instruction);
     // Increment the program counter
     processor->programCounter += 2;
     // decode & execute
