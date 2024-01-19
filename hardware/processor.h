@@ -140,33 +140,6 @@ void hexa_to_deci(char* instruc);
  */
 void processor_fetch_decode_execute(struct Processor* processor);
 
-/**
- * \relates Processor
- * \fn void processor_instruc_8(char* instruc)
- * \brief Fonction décodant les instructions commençant par 8.
- *
- * @param instruc l'instruction à décoder puis exécuter.
- */
-void processor_instruc_8(struct Processor* processor, char* instruc);
-
-/**
- * \relates Processor
- * \fn void processor_instruc_E(char* instruc)
- * \brief Fonction décodant les instructions commençant par E.
- *
- * @param instruc l'instruction à décoder puis exécuter.
- */
-void processor_instruc_E(struct Processor* processor, char* instruc);
-
-/**
- * \relates Processor
- * \fn void processor_instruc_F(char* instruc)
- * \brief Fonction décodant les instructions commençant par F.
- *
- * @param instruc l'instruction à décoder puis exécuter.
- */
-void processor_instruc_F(struct Processor* processor, char* instruc);
-
 // Load sprite in memory
 void load_sprite(struct Processor* processor);
 
