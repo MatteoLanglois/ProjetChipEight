@@ -168,7 +168,9 @@ void processor_00e0_cls(struct Processor* processor) {
 }
 
 void processor_00ee_ret(struct Processor* processor) {
-    processor->programCounter = processor->stack[processor->SP-1];
+    processor->programCounter = processor->stack[processor->SP];
+    processor->SP--;
+
 }
 
 void processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
@@ -176,10 +178,8 @@ void processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
 }
 
 void processor_2nnn_call(struct Processor* processor, uint16_t addr) {
-    printf("%d", processor->SP);
     processor->SP++;
     processor->stack[processor->SP] = processor->programCounter;
-    processor->SP--;
     processor->programCounter = addr;
 }
 
