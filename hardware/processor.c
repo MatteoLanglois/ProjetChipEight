@@ -229,6 +229,10 @@ void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2)
 }
 
 void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    if (reg1 == 15 || reg2 == 15){
+        printf("Erreur : on ne peut pas utiliser le registre 15\n");
+        exit(1);
+    }
     if ((int)processor->regV[reg1] + (int)processor->regV[reg2] > 255) {
         processor->regV[reg1] = (processor->regV[reg1] + processor->regV[reg2])
                 % 256;
@@ -240,6 +244,14 @@ void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2
 }
 
 void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
+    if (reg1 > 15 || reg2 > 15){
+        printf("Erreur : l'index du registre est hors de la plage valide (0-15)\n");
+        return;
+    }
+    if (processor->regV[reg1] < processor->regV[reg2]){
+        printf("Erreur : la soustraction entraîne un débordement négatif\n");
+        return;
+    }
     if (processor->regV[reg1] > processor->regV[reg2]){
         processor->regV[15] = 1;
     }
@@ -260,6 +272,10 @@ void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
 }
 
 void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    if (reg1 == 15 || reg2 == 15){
+        printf("Erreur : on ne peut pas utiliser le registre 15\n");
+        exit(1);
+    }
     if (processor->regV[reg2] > processor->regV[reg1]){
         processor->regV[15] = 1;
     }

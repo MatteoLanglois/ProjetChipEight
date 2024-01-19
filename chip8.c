@@ -106,12 +106,23 @@ void chip8_cycle(struct chip8* chip8) {
             cpt = 0;
         }
         SDL_Delay(20);
+        if (chip8->processor->ST > 0) {
+            Speaker_on(chip8->speaker);
+        } else {
+            Speaker_off(chip8->speaker);
+        }
         cpt++;
     }
     chip8_destroy(chip8);
 }
 
 void chip8_dec_timers(struct chip8* chip8) {
+    if (chip8->processor->ST > 0) {
+        chip8->processor->ST--;
+    }
+    if (chip8->processor->DT > 0) {
+        chip8->processor->DT--;
+    }
 
 }
 
