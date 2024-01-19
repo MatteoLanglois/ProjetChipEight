@@ -80,7 +80,7 @@ void chip8_load(struct chip8* chip8, const char* path) {
     }
 
     // Lire le fichier
-    uint16_t address = 512;
+    uint16_t address = 510;
     uint8_t* buffer = malloc(sizeof(uint8_t));
     while (fread(buffer, 1, 1, rom) == 1) {
         char* pass;
