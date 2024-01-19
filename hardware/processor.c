@@ -24,7 +24,7 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
 
     load_sprite(processor);
 
-    processor->programCounter = 510;
+    processor->programCounter = 512;
     processor->SP = 0;
 
     return processor;
