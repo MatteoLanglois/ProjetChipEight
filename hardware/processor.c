@@ -160,7 +160,9 @@ void load_sprite(struct Processor* processor) {
 // 35 instructions
 
 void processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
-    processor->programCounter = addr;
+    if (addr <= 4095 && addr >= 512) {
+        processor->programCounter = addr;
+    }
 }
 
 void processor_00e0_cls(struct Processor* processor) {
