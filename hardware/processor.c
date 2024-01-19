@@ -303,7 +303,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
     struct Sprite sprite;
-    if (!Sprite_init(&sprite, nibble)) {
+    if (Sprite_init(&sprite, nibble)) {
         printf("Erreur lors de l'initialisation du sprite\n");
         return;
     }
