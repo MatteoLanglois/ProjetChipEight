@@ -2,11 +2,7 @@
 
 struct RandomAccessMemory* RAM_init(){
   struct RandomAccessMemory* memory = malloc(sizeof(struct RandomAccessMemory));
-  if (memory == NULL){
-    return NULL;
-  }
-
-  for(int i = 0; i < RAM_max; i++){
+  for (int i = 0; i < RAM_max; i++){
     memory->memory[i] = 0;
   }
 

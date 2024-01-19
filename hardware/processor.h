@@ -27,7 +27,7 @@ struct Processor {
     /**
      * \brief Un tableau de 16 octets représentant les registres V0 à VF.
      */
-    uint8_t* regV;
+    uint8_t regV[16];
 
     /**
      * \brief Un entier représentant le registre I.
@@ -52,7 +52,7 @@ struct Processor {
     /**
      * \brief Un tableau de 16x16 octets représentant la pile du processeur.
      */
-    uint16_t* stack;
+    uint16_t stack[16];
 
     /**
      * \brief Un entier représentant le pointeur de pile. (la position du sommet

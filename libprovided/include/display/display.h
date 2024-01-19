@@ -61,8 +61,7 @@ struct Display {
         /**
          * Indicates whether the underlying SDL surface needs to be refreshed.
          */
-        int modified
-
+        int modified;
 };
 
 /**

@@ -7,14 +7,13 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
         printf("Erreur lors de l'initialisation du processeur");
         return NULL;
     }
-    processor->stack = malloc(16 * 16);
-    if (processor->stack == NULL) {
-        free(processor);
-        printf("Erreur lors de l'initialisation de la pile");
-        return NULL;
-    }
+
     for (int i = 0; i < 16; i++) {
         processor->stack[i] = 0;
+    }
+
+    for (int i = 0; i < 16; i++) {
+        processor->regV[i] = 0;
     }
 
     processor->RAM = RAM;
@@ -204,7 +203,11 @@ void processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg
 
 
 void processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val) {
-    processor->regV[reg] = val;
+    if (reg >= 0 && reg < 16) {
+        processor->regV[reg] = val;
+    } else {
+        printf("Erreur : l'index du registre est hors de la plage valide (0-15)\n");
+    }
 }
 
 void processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val) {

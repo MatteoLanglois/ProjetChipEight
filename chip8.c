@@ -12,8 +12,6 @@ void chip8_init(const char* path) {
             exit(1);
         }
 
-        chip8->processor->RAM = chip8->RAM;
-
         chip8->display = malloc(sizeof(struct Display));
         if (Display_init(chip8->display, 10) == 1) {
             printf("Erreur lors de l'initialisation de l'affichage");
