@@ -45,10 +45,13 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     uint8_t part2 = RAM_read(processor->RAM, processor->programCounter + 1);
     uint16_t instruction = part1 << 8;
     instruction += part2;
+    printf("Commande: %X04\n",instruction);
     // Increment the program counter
     processor->programCounter += 2;
     // decode & execute
-    if ((instruction & 0x00F0) == 0x00E0) {
+    if ((instruction & 0xFFFF) == 0x0000) {
+        return;
+    } else if ((instruction & 0x00F0) == 0x00E0) {
         processor_00e0_cls(processor);
     } else if ((instruction & 0x00FF) == 0x00EE) {
         processor_00ee_ret(processor);
