@@ -11,6 +11,9 @@
 #include "../libprovided/include/misc/error.h"
 #include "../libprovided/include/speaker/speaker.h"
 
+#define CHIP8_ERROR 1
+#define CHIP8_SUCCESS 0
+
 /**
  * \brief La structure représentant le processeur de la machine.
 */
@@ -154,7 +157,7 @@ void load_sprite(struct Processor* processor);
  * @param processor Le processeur
  * @param addr L'adresse vers laquelle sauter.
  */
-void processor_0nnn_sys(struct Processor* processor, uint16_t addr);
+int processor_0nnn_sys(struct Processor* processor, uint16_t addr);
 
 /**
  * \relates Processor
@@ -163,7 +166,7 @@ void processor_0nnn_sys(struct Processor* processor, uint16_t addr);
  *
  * @param processor Le processeur.
  */
-void processor_00e0_cls(struct Processor* processor);
+int processor_00e0_cls(struct Processor* processor);
 
 /**
  * \relates Processor
@@ -172,7 +175,7 @@ void processor_00e0_cls(struct Processor* processor);
  *
  * @param processor Le processeur.
  */
-void processor_00ee_ret(struct Processor* processor);
+int processor_00ee_ret(struct Processor* processor);
 
 /**
  * \relates Processor
@@ -182,7 +185,7 @@ void processor_00ee_ret(struct Processor* processor);
  * @param processor Le processeur.
  * @param addr L'adresse vers laquelle sauter.
  */
-void processor_1nnn_jp(struct Processor* processor, uint16_t addr);
+int processor_1nnn_jp(struct Processor* processor, uint16_t addr);
 
 /**
  * \relates Processor
@@ -196,7 +199,7 @@ void processor_1nnn_jp(struct Processor* processor, uint16_t addr);
  * @param processor Le processeur.
  * @param addr L'adresse de la fonction à appeler.
  */
-void processor_2nnn_call(struct Processor* processor, uint16_t addr);
+int processor_2nnn_call(struct Processor* processor, uint16_t addr);
 
 /**
  * \relates Processor
@@ -210,7 +213,7 @@ void processor_2nnn_call(struct Processor* processor, uint16_t addr);
  * @param reg Le registre à comparer.
  * @param val La valeur à comparer.
  */
-void processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val);
+int processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val);
 
 /**
  * \relates Processor
@@ -224,7 +227,7 @@ void processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val);
  * @param reg Le registre à comparer.
  * @param val La valeur à comparer.
  */
-void processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val);
+int processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val);
 
 /**
  * \relates Processor
@@ -238,7 +241,7 @@ void processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val);
  * @param reg1 
  * @param reg2 
  */
-void processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -251,7 +254,7 @@ void processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg
  * @param reg1 Le premier registre à comparer.
  * @param reg2 Le deuxième registre à comparer.
  */
-void processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val);
+int processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val);
 
 /**
  * \relates Processor
@@ -265,7 +268,7 @@ void processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val)
  * @param reg
  * @param val
  */
-void processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val);
+int processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val);
 
 /**
  * \relates Processor
@@ -278,7 +281,7 @@ void processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val);
  * @param reg1 Le registre dont on remplace la valeur.
  * @param reg2 Le deuxième registre dont on prend la valeur.
  */
-void processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -294,7 +297,7 @@ void processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg
  * @param reg1 Le premier registre à comparer.
  * @param reg2 Le deuxième registre à comparer.
  */
-void processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -310,7 +313,7 @@ void processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2);
  * @param reg1 Le premier registre à comparer.
  * @param reg2 Le deuxième registre à comparer.
  */
-void processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -326,7 +329,7 @@ void processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2)
  * @param reg1 Le premier registre à comparer.
  * @param reg2 Le deuxième registre à comparer.
  */
-void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -341,7 +344,7 @@ void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2)
  * @param reg1
  * @param reg2
  */
-void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -355,7 +358,7 @@ void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2
  * @param reg1
  * @param reg2
  */
-void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -368,7 +371,7 @@ void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2)
  * @param processor
  * @param reg
  */
-void processor_8xy6_shr(struct Processor* processor, uint8_t reg);
+int processor_8xy6_shr(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -381,7 +384,7 @@ void processor_8xy6_shr(struct Processor* processor, uint8_t reg);
  * @param reg1
  * @param reg2
  */
-void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -394,7 +397,7 @@ void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2
  * @param processor Le processeur
  * @param reg Le registre
  */
-void processor_8xyE_shl(struct Processor* processor, uint8_t reg);
+int processor_8xyE_shl(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -408,7 +411,7 @@ void processor_8xyE_shl(struct Processor* processor, uint8_t reg);
  * @param reg1 Le premier registre
  * @param reg2 Le deuxième registre
  */
-void processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -420,7 +423,7 @@ void processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t r
  * @param processor Le processeur
  * @param addr L'adresse qui va être stockée dans I.
  */
-void processor_Annn_ldi(struct Processor* processor, uint16_t addr);
+int processor_Annn_ldi(struct Processor* processor, uint16_t addr);
 
 /**
  * \relates Processor
@@ -432,7 +435,7 @@ void processor_Annn_ldi(struct Processor* processor, uint16_t addr);
  * @param processor Le processeur.
  * @param addr L'adresse utilisée pour le jump.
  */
-void processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr);
+int processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr);
 
 /**
  * \relates Processor
@@ -446,7 +449,7 @@ void processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr);
  * @param reg
  * @param val
  */
-void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
+int processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
 
 /**
  * \relates Processor
@@ -461,7 +464,7 @@ void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val);
  * @param reg2 Le registre qui contient la position y du sprite.
  * @param nibble Le nombre de byte à afficher.
  */
-void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
+int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble);
 
 /**
@@ -476,7 +479,7 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
  * @param processor
  * @param reg
  */
-void processor_Ex9E_skp(struct Processor* processor, uint8_t reg);
+int processor_Ex9E_skp(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -490,7 +493,7 @@ void processor_Ex9E_skp(struct Processor* processor, uint8_t reg);
  * @param processor Le processeur.
  * @param reg Le registre correspondant à la touche.
  */
-void processor_ExA1_sknp(struct Processor* processor, uint8_t reg);
+int processor_ExA1_sknp(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -502,7 +505,7 @@ void processor_ExA1_sknp(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx07_lddt(struct Processor* processor, uint8_t reg);
+int processor_Fx07_lddt(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -516,7 +519,7 @@ void processor_Fx07_lddt(struct Processor* processor, uint8_t reg);
  * @param processor Le processeur
  * @param reg Le registre
  */
-void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg);
+int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg);
 
 
 /**
@@ -529,7 +532,7 @@ void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx15_lddt(struct Processor* processor, uint8_t reg);
+int processor_Fx15_lddt(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -541,7 +544,7 @@ void processor_Fx15_lddt(struct Processor* processor, uint8_t reg);
  * @param processor Le processeur.
  * @param reg Le registre
  */
-void processor_Fx18_ldst(struct Processor* processor, uint8_t reg);
+int processor_Fx18_ldst(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -554,7 +557,7 @@ void processor_Fx18_ldst(struct Processor* processor, uint8_t reg);
  * @param processor Le processeur.
  * @param reg Le registre à additionner.
  */
-void processor_Fx1E_addi(struct Processor* processor, uint8_t reg);
+int processor_Fx1E_addi(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -567,7 +570,7 @@ void processor_Fx1E_addi(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx29_ldf(struct Processor* processor, uint8_t reg);
+int processor_Fx29_ldf(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -581,7 +584,7 @@ void processor_Fx29_ldf(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx33_ldb(struct Processor* processor, uint8_t reg);
+int processor_Fx33_ldb(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -595,7 +598,7 @@ void processor_Fx33_ldb(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx55_ldw(struct Processor* processor, uint8_t reg);
+int processor_Fx55_ldw(struct Processor* processor, uint8_t reg);
 
 /**
  * \relates Processor
@@ -609,6 +612,6 @@ void processor_Fx55_ldw(struct Processor* processor, uint8_t reg);
  * @param processor
  * @param reg
  */
-void processor_Fx65_ldr(struct Processor* processor, uint8_t reg);
+int processor_Fx65_ldr(struct Processor* processor, uint8_t reg);
 
 #endif

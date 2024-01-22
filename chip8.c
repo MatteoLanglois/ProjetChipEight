@@ -54,7 +54,8 @@ void chip8_init(const char* path) {
         chip8_cycle(chip8);
     }
     if (errcode != QUIT) {
-            fprintf(stderr,"The program has terminated abnormally (errcode=%s)\n",errorstr());
+            fprintf(stderr,"Le programme s'est terminé anormalmeent "
+                           "(errcode=%s)\n",errorstr());
             exit(1);
     }
 }
@@ -103,7 +104,7 @@ void chip8_cycle(struct chip8* chip8) {
             chip8_dec_timers(chip8);
             cpt = 0;
         }
-        SDL_Delay(20);
+        SDL_Delay(2);
         if (chip8->processor->ST > 0) {
             Speaker_on(chip8->speaker);
         } else {

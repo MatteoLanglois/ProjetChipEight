@@ -45,7 +45,6 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     uint8_t part2 = RAM_read(processor->RAM, processor->programCounter + 1);
     uint16_t instruction = part1 << 8;
     instruction += part2;
-    printf("Commande: %X\n",instruction);
     // Increment the program counter
     processor->programCounter += 2;
     // decode & execute
@@ -157,84 +156,99 @@ void load_sprite(struct Processor* processor) {
 
 // 35 instructions
 
-void processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
+int processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
     if (addr <= 4095 && addr >= 512) {
         processor->programCounter = addr;
+        return CHIP8_SUCCESS;
     }
+    return CHIP8_ERROR;
 }
 
-void processor_00e0_cls(struct Processor* processor) {
+int processor_00e0_cls(struct Processor* processor) {
     Display_CLS(processor->display);
+    return CHIP8_SUCCESS;
 }
 
-void processor_00ee_ret(struct Processor* processor) {
+int processor_00ee_ret(struct Processor* processor) {
     processor->programCounter = processor->stack[processor->SP];
     processor->SP--;
+    return CHIP8_SUCCESS;
 
 }
 
-void processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
+int processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr;
+    return CHIP8_SUCCESS;
 }
 
-void processor_2nnn_call(struct Processor* processor, uint16_t addr) {
+int processor_2nnn_call(struct Processor* processor, uint16_t addr) {
     processor->SP++;
     processor->stack[processor->SP] = processor->programCounter;
     processor->programCounter = addr;
+    return CHIP8_SUCCESS;
 }
 
-void processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
+int processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] == val) {
         processor->programCounter += 2;
     }
+        return CHIP8_SUCCESS;
 }
 
-void processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val) {
+int processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] != val) {
         processor->programCounter += 2;
     }
+        return CHIP8_SUCCESS;
 }
 
-void processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if (processor->regV[reg1] == processor->regV[reg2]) {
         processor->programCounter += 2;
     }
+        return CHIP8_SUCCESS;
 }
 
 
-void processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val) {
-    if (reg >= 0 && reg < 16) {
+int processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val) {
+    if (reg < 16) {
         processor->regV[reg] = val;
+        return CHIP8_SUCCESS;
     } else {
-        printf("Erreur : l'index du registre est hors de la plage valide (0-15)\n");
+        return CHIP8_ERROR;
     }
 }
 
-void processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val) {
+int processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val) {
     processor->regV[reg] = processor->regV[reg] + val;
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg2];
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] | processor->regV[reg2];
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] & processor->regV[reg2];
+    return CHIP8_SUCCESS;
 
 }
 
-void processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] ^ processor->regV[reg2];
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    int output = CHIP8_SUCCESS;
     if (reg1 == 15 || reg2 == 15){
-        printf("Erreur : on ne peut pas utiliser le registre 15\n");
-        exit(1);
+        output = CHIP8_ERROR;
     }
     if ((int)processor->regV[reg1] + (int)processor->regV[reg2] > 255) {
         processor->regV[reg1] = (processor->regV[reg1] + processor->regV[reg2])
@@ -244,16 +258,18 @@ void processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2
         processor->regV[reg1] += processor->regV[reg2];
         processor->regV[15] = 0;
     }
+    return output;
 }
 
-void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
+int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
+    int output = CHIP8_SUCCESS;
     if (reg1 > 15 || reg2 > 15){
         printf("Erreur : l'index du registre est hors de la plage valide (0-15)\n");
-        return;
+        output = CHIP8_ERROR;
     }
     if (processor->regV[reg1] < processor->regV[reg2]){
         printf("Erreur : la soustraction entraîne un débordement négatif\n");
-        return;
+        output = CHIP8_ERROR;
     }
     if (processor->regV[reg1] > processor->regV[reg2]){
         processor->regV[15] = 1;
@@ -262,9 +278,10 @@ void processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2)
         processor->regV[15] = 0;
     }
     processor->regV[reg1] = processor->regV[reg1] - processor->regV[reg2];
+    return output;
 }
 
-void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
+int processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
     if ((int)processor->regV[reg] % 2 == 0){
         processor->regV[15] = (uint8_t)0;
     }
@@ -272,9 +289,10 @@ void processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
         processor->regV[15] = (uint8_t)1;
     }
     processor->regV[reg] = (uint8_t)((int)processor->regV[reg]/2);
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if (reg1 == 15 || reg2 == 15){
         printf("Erreur : on ne peut pas utiliser le registre 15\n");
         exit(1);
@@ -286,9 +304,10 @@ void processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2
         processor->regV[15] = 0;
     }
     processor->regV[reg1] = processor->regV[reg2] - processor->regV[reg1];
+    return CHIP8_SUCCESS;
 }
 
-void processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
+int processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
     if ((int)processor->regV[reg] == 0){
         processor->regV[15] = (uint8_t)0;
     }
@@ -296,28 +315,33 @@ void processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
         processor->regV[15] = (uint8_t)1;
     }
     processor->regV[reg] = (uint8_t)((int)processor->regV[reg]*2);
+    return CHIP8_SUCCESS;
 }
 
-void processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if (processor->regV[reg1] != processor->regV[reg2]) {
         processor->programCounter += 2;
     }
+    return CHIP8_SUCCESS;
 }
 
-void processor_Annn_ldi(struct Processor* processor, uint16_t addr) {
+int processor_Annn_ldi(struct Processor* processor, uint16_t addr) {
     processor->I = addr;
+    return CHIP8_SUCCESS;
 }
 
-void processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr) {
+int processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr + processor->regV[0];
+    return CHIP8_SUCCESS;
 }
 
-void processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
+int processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
     long int y = random() / 255;
     processor->regV[reg] = y && val;
+    return CHIP8_SUCCESS;
 }
 
-void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
+int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
     struct Sprite sprite;
@@ -341,45 +365,54 @@ void processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
     }
 
     Sprite_destroy(&sprite);
+    return CHIP8_SUCCESS;
 }
 
-void processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
+int processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, reg)==1){
         processor->programCounter += 2;
     }
+    return CHIP8_SUCCESS;
 }
 
-void processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
+int processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, reg)==0){
         processor->programCounter += 2;
     }
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
+int processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
     processor->regV[reg] = processor->DT;
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
+int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx15_lddt(struct Processor* processor, uint8_t reg) {
+int processor_Fx15_lddt(struct Processor* processor, uint8_t reg) {
     processor->DT = processor->regV[reg];
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx18_ldst(struct Processor* processor, uint8_t reg) {
+int processor_Fx18_ldst(struct Processor* processor, uint8_t reg) {
     processor->ST = processor->regV[reg];
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx1E_addi(struct Processor* processor, uint8_t reg) {
+int processor_Fx1E_addi(struct Processor* processor, uint8_t reg) {
     processor->I += processor->regV[reg];
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
+int processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
     processor->I = 431 + reg * 5;
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
+int processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
     uint8_t value = processor->regV[reg];
 
     // Les chiffres des centaines, des dizaines et des unités
@@ -391,16 +424,19 @@ void processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
     processor->RAM->memory[processor->I] = hundreds;
     processor->RAM->memory[processor->I + 1] = tens;
     processor->RAM->memory[processor->I + 2] = ones;
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
+int processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         RAM_write(processor->RAM, processor->I+i, processor->regV[i]);
     }
+    return CHIP8_SUCCESS;
 }
 
-void processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
+int processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         processor->regV[i] = RAM_read(processor->RAM, processor->I + i);
     }
+    return CHIP8_SUCCESS;
 }
