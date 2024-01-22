@@ -97,15 +97,22 @@ int chip8_load(struct chip8* chip8, const char* path) {
 
 // Viser 500Hz
 void chip8_cycle(struct chip8* chip8) {
-    uint running = 1;
+    SDL_Event event;
     int cpt = 0;
-    while (running) {
+    while (errcode != QUIT) {
         processor_fetch_decode_execute(chip8->processor);
         if (cpt == 8) {
             chip8_refresh_screen(chip8);
             chip8_dec_timers(chip8);
             cpt = 0;
         }
+
+        while(SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                errcode = QUIT;
+            }
+        }
+
         SDL_Delay(2);
         if (chip8->processor->ST > 0) {
             Speaker_on(chip8->speaker);
