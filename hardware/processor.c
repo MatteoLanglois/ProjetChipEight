@@ -37,7 +37,7 @@ void Proc_destroy(struct Processor* processor) {
 
 // Fetch Decode execute
 
-void processor_fetch_decode_execute(struct Processor* processor) {
+int processor_fetch_decode_execute(struct Processor* processor) {
     // fetch
     // Get the instruction in the memory
 
@@ -121,8 +121,7 @@ void processor_fetch_decode_execute(struct Processor* processor) {
     } else if ((instruction & 0xF0FF) == 0xF033) {
         processor_Fx33_ldb(processor, (instruction & 0x0F00) >> 8);
     } else {
-        printf("Erreur lors de l'execution de l'instruction");
-        exit(1);
+        return OPCODE;
     }
 }
 
@@ -159,96 +158,101 @@ void load_sprite(struct Processor* processor) {
 int processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
     if (addr <= 4095 && addr >= 512) {
         processor->programCounter = addr;
-        return CHIP8_SUCCESS;
+    } else {
+        return RANGE;
     }
-    return CHIP8_ERROR;
 }
 
 int processor_00e0_cls(struct Processor* processor) {
-    Display_CLS(processor->display);
-    return CHIP8_SUCCESS;
+    if (Display_CLS(processor->display)) {
+        return SDL;
+    }
+
+    
 }
 
 int processor_00ee_ret(struct Processor* processor) {
+    if (*processor->stack > 15) {
+        return SEGFAULT;
+    }
     processor->programCounter = processor->stack[processor->SP];
     processor->SP--;
-    return CHIP8_SUCCESS;
-
 }
 
 int processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_2nnn_call(struct Processor* processor, uint16_t addr) {
+    if (processor->SP > 15) {
+        return SEGFAULT;
+    }
     processor->SP++;
     processor->stack[processor->SP] = processor->programCounter;
     processor->programCounter = addr;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] == val) {
         processor->programCounter += 2;
     }
-        return CHIP8_SUCCESS;
+        
 }
 
 int processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] != val) {
         processor->programCounter += 2;
     }
-        return CHIP8_SUCCESS;
+        
 }
 
 int processor_5xy0_sereg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if (processor->regV[reg1] == processor->regV[reg2]) {
         processor->programCounter += 2;
     }
-        return CHIP8_SUCCESS;
+        
 }
 
 
 int processor_6xkk_ldval(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (reg < 16) {
         processor->regV[reg] = val;
-        return CHIP8_SUCCESS;
     } else {
-        return CHIP8_ERROR;
+        return SEGFAULT;
     }
 }
 
 int processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val) {
     processor->regV[reg] = processor->regV[reg] + val;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg2];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] | processor->regV[reg2];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xy2_and(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] & processor->regV[reg2];
-    return CHIP8_SUCCESS;
+    
 
 }
 
 int processor_8xy3_xor(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] ^ processor->regV[reg2];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    int output = CHIP8_SUCCESS;
     if (reg1 == 15 || reg2 == 15){
-        output = CHIP8_ERROR;
+        return SEGFAULT;
     }
     if ((int)processor->regV[reg1] + (int)processor->regV[reg2] > 255) {
         processor->regV[reg1] = (processor->regV[reg1] + processor->regV[reg2])
@@ -258,18 +262,16 @@ int processor_8xy4_addc(struct Processor* processor, uint8_t reg1, uint8_t reg2)
         processor->regV[reg1] += processor->regV[reg2];
         processor->regV[15] = 0;
     }
-    return output;
 }
 
 int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
-    int output = CHIP8_SUCCESS;
     if (reg1 > 15 || reg2 > 15){
         printf("Erreur : l'index du registre est hors de la plage valide (0-15)\n");
-        output = CHIP8_ERROR;
+        return RANGE;
     }
     if (processor->regV[reg1] < processor->regV[reg2]){
         printf("Erreur : la soustraction entraîne un débordement négatif\n");
-        output = CHIP8_ERROR;
+        return SEGFAULT;
     }
     if (processor->regV[reg1] > processor->regV[reg2]){
         processor->regV[15] = 1;
@@ -278,7 +280,6 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
         processor->regV[15] = 0;
     }
     processor->regV[reg1] = processor->regV[reg1] - processor->regV[reg2];
-    return output;
 }
 
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
@@ -289,14 +290,10 @@ int processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
         processor->regV[15] = (uint8_t)1;
     }
     processor->regV[reg] = (uint8_t)((int)processor->regV[reg]/2);
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    if (reg1 == 15 || reg2 == 15){
-        printf("Erreur : on ne peut pas utiliser le registre 15\n");
-        exit(1);
-    }
     if (processor->regV[reg2] > processor->regV[reg1]){
         processor->regV[15] = 1;
     }
@@ -304,7 +301,7 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2)
         processor->regV[15] = 0;
     }
     processor->regV[reg1] = processor->regV[reg2] - processor->regV[reg1];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
@@ -315,44 +312,46 @@ int processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
         processor->regV[15] = (uint8_t)1;
     }
     processor->regV[reg] = (uint8_t)((int)processor->regV[reg]*2);
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     if (processor->regV[reg1] != processor->regV[reg2]) {
         processor->programCounter += 2;
     }
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Annn_ldi(struct Processor* processor, uint16_t addr) {
     processor->I = addr;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr + processor->regV[0];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
     long int y = random() / 255;
     processor->regV[reg] = y && val;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
         uint8_t nibble) {
     // Init a sprite
     struct Sprite sprite;
-    Sprite_init(&sprite, nibble);
+    if (Sprite_init(&sprite, nibble)) {
+        return MALLOC;
+    }
 
     // On reconstruit le sprite
     for (uint16_t i = processor->I; i < processor->I + nibble; i++) {
         if (i >= 4096) {
             printf("Erreur : dépassement de mémoire lors de la lecture du sprite\n");
             Sprite_destroy(&sprite);
-            return;
+            return SEGFAULT;
         }
         Sprite_add(&sprite, processor->RAM->memory[i]);
     }
@@ -361,55 +360,55 @@ int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
     if (Display_DRW(processor->display, &sprite,
                 processor->regV[reg1], processor->regV[reg2],
                 &processor->regV[15])) {
-        printf("Erreur lors de l'affichage du sprite\n");
+        return SDL;
     }
 
     Sprite_destroy(&sprite);
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, reg)==1){
         processor->programCounter += 2;
     }
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, reg)==0){
         processor->programCounter += 2;
     }
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
     processor->regV[reg] = processor->DT;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx15_lddt(struct Processor* processor, uint8_t reg) {
     processor->DT = processor->regV[reg];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx18_ldst(struct Processor* processor, uint8_t reg) {
     processor->ST = processor->regV[reg];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx1E_addi(struct Processor* processor, uint8_t reg) {
     processor->I += processor->regV[reg];
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
     processor->I = 431 + reg * 5;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
@@ -424,19 +423,19 @@ int processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
     processor->RAM->memory[processor->I] = hundreds;
     processor->RAM->memory[processor->I + 1] = tens;
     processor->RAM->memory[processor->I + 2] = ones;
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         RAM_write(processor->RAM, processor->I+i, processor->regV[i]);
     }
-    return CHIP8_SUCCESS;
+    
 }
 
 int processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         processor->regV[i] = RAM_read(processor->RAM, processor->I + i);
     }
-    return CHIP8_SUCCESS;
+    
 }

@@ -11,9 +11,6 @@
 #include "../libprovided/include/misc/error.h"
 #include "../libprovided/include/speaker/speaker.h"
 
-#define CHIP8_ERROR 1
-#define CHIP8_SUCCESS 0
-
 /**
  * \brief La structure représentant le processeur de la machine.
 */
@@ -113,25 +110,6 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
  */
 void Proc_destroy(struct Processor* processor);
 
-/**
- * \relates Processor
- * \fn void puiss(int num, int exp)
- * \brief Fonction de puissance.
- *
- * @param num le nombre à mettre à la puissance exp.
- * @param exp l'exposant.
- */
-int puiss(int num, int exp);
-
-/**
- * \relates Processor
- * \fn void processor_instruc_0(char* instruc)
- * \brief Fonction transformant la chaine de charactère hexadecimal en un nombre décimal.
- *
- * @param instruc la chaine de caractère à traduire.
- */
-void hexa_to_deci(char* instruc);
-
 // FetchDecodeExecute
 
 /**
@@ -141,7 +119,7 @@ void hexa_to_deci(char* instruc);
  *
  * @param processor Le processeur.
  */
-void processor_fetch_decode_execute(struct Processor* processor);
+int processor_fetch_decode_execute(struct Processor* processor);
 
 // Load sprite in memory
 void load_sprite(struct Processor* processor);

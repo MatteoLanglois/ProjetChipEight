@@ -21,7 +21,7 @@ struct chip8 {
 
 void chip8_init(const char* path);
 void chip8_destroy(struct chip8* chip8);
-void chip8_load(struct chip8* chip8, const char* path);
+int chip8_load(struct chip8* chip8, const char* path);
 
 // Viser 500Hz
 void chip8_cycle(struct chip8* chip8);
