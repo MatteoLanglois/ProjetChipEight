@@ -293,11 +293,7 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
 
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     uint8_t temp = processor->regV[reg1] % 2;
-    if (reg2 == 15) {
-        processor->regV[reg1] >>= 1;
-    } else{
-        processor->regV[reg1] = processor->regV[reg2] >> 1;
-    }
+    processor->regV[reg1] /= 2;
     processor->regV[15] = temp;
 }
 
@@ -315,12 +311,8 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
 }
 
 int processor_8xyE_shl(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    uint8_t temp = processor->regV[reg1] % 2;
-    if (reg2 == 15) {
-        processor->regV[reg1] <<= 1;
-    } else{
-        processor->regV[reg1] = processor->regV[reg2] << 1;
-    }
+    uint8_t temp = processor->regV[reg1] / 128;
+    processor->regV[reg1] *= 2;
     processor->regV[15] = temp;
 }
 
