@@ -370,14 +370,14 @@ int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
 }
 
 int processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
-    if (Keyboard_get(processor->keyboard, reg)==1){
+    if (Keyboard_get(processor->keyboard, processor->regV[reg]) == KEY_DOWN){
         processor->programCounter += 2;
     }
     
 }
 
 int processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
-    if (Keyboard_get(processor->keyboard, reg)==0){
+    if (Keyboard_get(processor->keyboard, processor->regV[reg]) == KEY_UP){
         processor->programCounter += 2;
     }
     
