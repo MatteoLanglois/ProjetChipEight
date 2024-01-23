@@ -347,9 +347,10 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2);
  * Ensuite reg est divisé par 2 (shift right).
  *
  * @param processor
- * @param reg
+ * @param reg1
+ * @param reg2
  */
-int processor_8xy6_shr(struct Processor* processor, uint8_t reg);
+int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor
@@ -374,8 +375,9 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1, uint8_t reg2)
  *
  * @param processor Le processeur
  * @param reg Le registre
+ * @param reg2 Le deuxième registre
  */
-int processor_8xyE_shl(struct Processor* processor, uint8_t reg);
+int processor_8xyE_shl(struct Processor* processor, uint8_t reg1, uint8_t reg2);
 
 /**
  * \relates Processor

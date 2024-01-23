@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.27)
 project(ProjetChipEight C)
 
 set(CMAKE_C_STANDARD 17)
@@ -21,4 +21,4 @@ add_executable(ProjetChipEight main.c
 
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 target_link_libraries(ProjetChipEight ${SDL2_LIBRARIES}
-/mnt/c/Users/mamac/Documents/Cours/Polytech/Projet/ProjetChipEight/libprovided/lib/release/x64/libprovided.a -lm)
+/home/romain/CLionProjects/ProjetChipEight/libprovided/lib/release/x64/libprovided.a -lm)

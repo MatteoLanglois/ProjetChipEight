@@ -91,12 +91,12 @@ int processor_fetch_decode_execute(struct Processor* processor) {
         processor_8xy5_sub(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8006) {
-        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8);
+        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8, (instruction & 0x0F00) >> 4);
     } else if ((instruction & 0xF00F) == 0x8007) {
         processor_8xy7_subn(processor, (instruction & 0x0F00) >> 8,
                             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x800E) {
-        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8);
+        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8, (instruction & 0x0F00) >> 4);
     } else if ((instruction & 0xF00F ) == 0x9000) {
         processor_9xy0_sne_reg(processor, (instruction & 0x0F00) >> 8,
                                (instruction & 0x00F0) >> 4);
@@ -288,11 +288,14 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
     }
 }
 
-int processor_8xy6_shr(struct Processor* processor, uint8_t reg) {
-    uint8_t temp = processor->regV[reg] % 2;
-    processor->regV[reg] >>= 1;
+int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    uint8_t temp = processor->regV[reg1] % 2;
+    if (reg2 == 15) {
+        processor->regV[reg1] >>= 1;
+    } else{
+        processor->regV[reg1] = processor->regV[reg2] >> 1;
+    }
     processor->regV[15] = temp;
-    
 }
 
 int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
@@ -308,11 +311,14 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
     
 }
 
-int processor_8xyE_shl(struct Processor* processor, uint8_t reg) {
-    uint8_t temp = processor->regV[reg] / 128;
-    processor->regV[reg] <<= 1;
+int processor_8xyE_shl(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    uint8_t temp = processor->regV[reg1] % 2;
+    if (reg2 == 15) {
+        processor->regV[reg1] <<= 1;
+    } else{
+        processor->regV[reg1] = processor->regV[reg2] << 1;
+    }
     processor->regV[15] = temp;
-    
 }
 
 int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1,
@@ -373,7 +379,6 @@ int processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, processor->regV[reg]) == KEY_DOWN){
         processor->programCounter += 2;
     }
-    
 }
 
 int processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {

@@ -30,7 +30,7 @@ void chip8_init(const char* path) {
 
         chip8->speaker = malloc(sizeof(struct Speaker));
         if (Speaker_init(chip8->speaker) == 1) {
-            printf("Erreur lors de l'initialisation du haut-parleur");
+            printf("Erreur lors de l'initialisation        du haut-parleur");
             free(chip8->display);
             free(chip8->keyboard);
             RAM_destroy(chip8->RAM);
@@ -74,15 +74,13 @@ int chip8_load(struct chip8* chip8, const char* path) {
     // Ouvrir le fichier
     FILE* rom = fopen(path, "r");
     if (rom == NULL) {
-        return PERM;
+        printf("Erreur lors de l'ouverture du fichier");
+        exit(1);
     }
 
     // Lire le fichier
     uint16_t address = 512;
     uint8_t* buffer = malloc(sizeof(uint8_t));
-    if (buffer == NULL) {
-        return MALLOC;
-    }
     while (fread(buffer, 1, 1, rom) == 1) {
         char* pass;
         sprintf(pass, "%02X", *buffer);
