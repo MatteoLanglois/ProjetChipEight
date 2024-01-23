@@ -251,12 +251,14 @@ int processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1,
 
 int processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] | processor->regV[reg2];
+    processor->regV[15] = 0;
     
 }
 
 int processor_8xy2_and(struct Processor* processor, uint8_t reg1,
         uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] & processor->regV[reg2];
+    processor->regV[15] = 0;
     
 
 }
@@ -264,6 +266,7 @@ int processor_8xy2_and(struct Processor* processor, uint8_t reg1,
 int processor_8xy3_xor(struct Processor* processor, uint8_t reg1,
         uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] ^ processor->regV[reg2];
+    processor->regV[15] = 0;
     
 }
 
@@ -437,6 +440,7 @@ int processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         RAM_write(processor->RAM, processor->I+i, processor->regV[i]);
     }
+    processor->I++;
     
 }
 
@@ -444,5 +448,6 @@ int processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
     for(int i = 0; i <= reg; i++) {
         processor->regV[i] = RAM_read(processor->RAM, processor->I + i);
     }
+    processor->I++;
     
 }
