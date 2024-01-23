@@ -173,14 +173,14 @@ int processor_0nnn_sys(struct Processor* processor, uint16_t addr) {
     } else {
         return RANGE;
     }
+    return 0;
 }
 
 int processor_00e0_cls(struct Processor* processor) {
     if (Display_CLS(processor->display)) {
         return SDL;
     }
-
-    
+    return 0;
 }
 
 int processor_00ee_ret(struct Processor* processor) {
@@ -189,11 +189,12 @@ int processor_00ee_ret(struct Processor* processor) {
     }
     processor->programCounter = processor->stack[processor->SP];
     processor->SP--;
+    return 0;
 }
 
 int processor_1nnn_jp(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr;
-    
+    return 0;
 }
 
 int processor_2nnn_call(struct Processor* processor, uint16_t addr) {
@@ -203,21 +204,21 @@ int processor_2nnn_call(struct Processor* processor, uint16_t addr) {
     processor->SP++;
     processor->stack[processor->SP] = processor->programCounter;
     processor->programCounter = addr;
-    
+    return 0;
 }
 
 int processor_3xkk_se(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] == val) {
         processor->programCounter += 2;
     }
-        
+    return 0;
 }
 
 int processor_4xkk_sne(struct Processor* processor, uint8_t reg, uint8_t val) {
     if (processor->regV[reg] != val) {
         processor->programCounter += 2;
     }
-        
+    return 0;
 }
 
 int processor_5xy0_sereg(struct Processor* processor, uint8_t reg1,
@@ -225,7 +226,7 @@ int processor_5xy0_sereg(struct Processor* processor, uint8_t reg1,
     if (processor->regV[reg1] == processor->regV[reg2]) {
         processor->programCounter += 2;
     }
-        
+    return 0;
 }
 
 
@@ -236,38 +237,38 @@ int processor_6xkk_ldval(struct Processor* processor, uint8_t reg,
     } else {
         return SEGFAULT;
     }
+    return 0;
 }
 
 int processor_7xkk_add(struct Processor* processor, uint8_t reg, uint8_t val) {
     processor->regV[reg] = processor->regV[reg] + val;
-    
+    return 0;
 }
 
 int processor_8xy0_ldreg(struct Processor* processor, uint8_t reg1,
         uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg2];
-    
+    return 0;
 }
 
 int processor_8xy1_or(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] | processor->regV[reg2];
     processor->regV[15] = 0;
-    
+    return 0;
 }
 
 int processor_8xy2_and(struct Processor* processor, uint8_t reg1,
         uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] & processor->regV[reg2];
     processor->regV[15] = 0;
-    
-
+    return 0;
 }
 
 int processor_8xy3_xor(struct Processor* processor, uint8_t reg1,
         uint8_t reg2) {
     processor->regV[reg1] = processor->regV[reg1] ^ processor->regV[reg2];
     processor->regV[15] = 0;
-    
+    return 0;
 }
 
 int processor_8xy4_addc(struct Processor* processor, uint8_t reg1,
@@ -279,6 +280,7 @@ int processor_8xy4_addc(struct Processor* processor, uint8_t reg1,
         processor->regV[reg1] += processor->regV[reg2];
         processor->regV[15] = 0;
     }
+    return 0;
 }
 
 int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
@@ -289,12 +291,14 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
         processor->regV[reg1] -= processor->regV[reg2];
         processor->regV[15] = 0;
     }
+    return 0;
 }
 
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     uint8_t temp = processor->regV[reg1] % 2;
     processor->regV[reg1] /= 2;
     processor->regV[15] = temp;
+    return 0;
 }
 
 int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
@@ -305,15 +309,15 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
     } else {
         processor->regV[reg1] = processor->regV[reg2] - processor->regV[reg1];
         processor->regV[15] = 0;
-
     }
-    
+    return 0;
 }
 
 int processor_8xyE_shl(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
     uint8_t temp = processor->regV[reg1] / 128;
     processor->regV[reg1] *= 2;
     processor->regV[15] = temp;
+    return 0;
 }
 
 int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1,
@@ -321,23 +325,23 @@ int processor_9xy0_sne_reg(struct Processor* processor, uint8_t reg1,
     if (processor->regV[reg1] != processor->regV[reg2]) {
         processor->programCounter += 2;
     }
-    
+    return 0;
 }
 
 int processor_Annn_ldi(struct Processor* processor, uint16_t addr) {
     processor->I = addr;
-    
+    return 0;
 }
 
 int processor_Bnnn_jpv0(struct Processor* processor, uint16_t addr) {
     processor->programCounter = addr + processor->regV[0];
-    
+    return 0;
 }
 
 int processor_Cxkk_rnd(struct Processor* processor, uint8_t reg, uint8_t val) {
     long int y = random() / 255;
     processor->regV[reg] = y && val;
-    
+    return 0;
 }
 
 int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
@@ -367,65 +371,60 @@ int processor_Dxyn_drw(struct Processor* processor, uint8_t reg1, uint8_t reg2,
     }
 
     Sprite_destroy(&sprite);
-    
+    return 0;
 }
 
 int processor_Ex9E_skp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, processor->regV[reg]) == KEY_DOWN){
         processor->programCounter += 2;
     }
+    return 0;
 }
 
 int processor_ExA1_sknp(struct Processor* processor, uint8_t reg) {
     if (Keyboard_get(processor->keyboard, processor->regV[reg]) == KEY_UP){
         processor->programCounter += 2;
     }
-    
+    return 0;
 }
 
 int processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
     processor->regV[reg] = processor->DT;
-    
+    return 0;
 }
 
 int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
-    
+    return 0;
 }
 
 int processor_Fx15_lddt(struct Processor* processor, uint8_t reg) {
     processor->DT = processor->regV[reg];
-    
+    return 0;
 }
 
 int processor_Fx18_ldst(struct Processor* processor, uint8_t reg) {
     processor->ST = processor->regV[reg];
-    
+    return 0;
 }
 
 int processor_Fx1E_addi(struct Processor* processor, uint8_t reg) {
     processor->I += processor->regV[reg];
-    
+    return 0;
 }
 
 int processor_Fx29_ldf(struct Processor* processor, uint8_t reg) {
     processor->I = 431 + reg * 5;
-    
+    return 0;
 }
 
 int processor_Fx33_ldb(struct Processor* processor, uint8_t reg) {
     uint8_t value = processor->regV[reg];
-
-    // Les chiffres des centaines, des dizaines et des unités
-    uint8_t hundreds = value / 100;
-    uint8_t tens = (value / 10) % 10;
-    uint8_t ones = value % 10;
-
     // Stocker les chiffres dans la mémoire à partir de l'emplacement I
-    processor->RAM->memory[processor->I] = hundreds;
-    processor->RAM->memory[processor->I + 1] = tens;
-    processor->RAM->memory[processor->I + 2] = ones;
-    
+    processor->RAM->memory[processor->I] = value / 100;
+    processor->RAM->memory[processor->I + 1] = (value / 10) % 10;
+    processor->RAM->memory[processor->I + 2] = value % 10;
+    return 0;
 }
 
 int processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
@@ -433,7 +432,7 @@ int processor_Fx55_ldw(struct Processor* processor, uint8_t reg) {
         RAM_write(processor->RAM, processor->I+i, processor->regV[i]);
     }
     processor->I++;
-    
+    return 0;
 }
 
 int processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
@@ -441,5 +440,5 @@ int processor_Fx65_ldr(struct Processor* processor, uint8_t reg) {
         processor->regV[i] = RAM_read(processor->RAM, processor->I + i);
     }
     processor->I++;
-    
+    return 0;
 }
