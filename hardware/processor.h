@@ -16,7 +16,7 @@
 */
 
 /**
- * \struct Processor processor.h "hardware/processor.h"
+ * \struct Processor processor.h "processor.h"
  * \brief La structure représentant le processeur de la machine.
  * La structure contient :
  * * Un pointeur vers une structure Register représentant les registres du
@@ -351,6 +351,7 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2);
  * @param reg2
  */
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2);
+
 
 /**
  * \relates Processor

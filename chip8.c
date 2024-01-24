@@ -50,7 +50,15 @@ void chip8_init(const char* path) {
         }
 
 
-        chip8_load(chip8, path);
+        if (chip8_load(chip8, path) != 0) {
+            printf("Erreur lors de la lecture de la ROM");
+            free(chip8->display);
+            free(chip8->keyboard);
+            free(chip8->speaker);
+            Proc_destroy(chip8->processor);
+            RAM_destroy(chip8->RAM);
+            exit(1);
+        }
         chip8_cycle(chip8);
     }
     if (errcode != QUIT) {
@@ -75,7 +83,7 @@ int chip8_load(struct chip8* chip8, const char* path) {
     FILE* rom = fopen(path, "r");
     if (rom == NULL) {
         printf("Erreur lors de l'ouverture du fichier");
-        exit(1);
+        return PERM;
     }
 
     // Lire le fichier
@@ -91,6 +99,7 @@ int chip8_load(struct chip8* chip8, const char* path) {
 
     // Fermer le fichier
     fclose(rom);
+    return 0;
 }
 
 // Viser 500Hz

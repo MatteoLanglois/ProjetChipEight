@@ -91,12 +91,14 @@ int processor_fetch_decode_execute(struct Processor* processor) {
         processor_8xy5_sub(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8006) {
-        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8, (instruction & 0x0F00) >> 4);
+        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8,
+            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8007) {
         processor_8xy7_subn(processor, (instruction & 0x0F00) >> 8,
                             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x800E) {
-        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8, (instruction & 0x0F00) >> 4);
+        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8,
+            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F ) == 0x9000) {
         processor_9xy0_sne_reg(processor, (instruction & 0x0F00) >> 8,
                                (instruction & 0x00F0) >> 4);
@@ -295,6 +297,10 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
 }
 
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    printf("Reg1 : %d, reg2: %d\n", reg1, reg2);
+    if (reg2 <= 15) {
+        processor->regV[reg1] = processor->regV[reg2];
+    }
     uint8_t temp = processor->regV[reg1] % 2;
     processor->regV[reg1] /= 2;
     processor->regV[15] = temp;
@@ -314,6 +320,9 @@ int processor_8xy7_subn(struct Processor* processor, uint8_t reg1,
 }
 
 int processor_8xyE_shl(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
+    if (reg2 <= 15) {
+        processor->regV[reg1] = processor->regV[reg2];
+    }
     uint8_t temp = processor->regV[reg1] / 128;
     processor->regV[reg1] *= 2;
     processor->regV[15] = temp;
