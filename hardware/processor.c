@@ -403,6 +403,16 @@ int processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
 }
 
 int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
+    uint8_t* key = malloc(sizeof(int));
+    Keyboard_wait(processor->keyboard, key);
+    while (Keyboard_get(processor->keyboard, *key) == KEY_DOWN) {
+        processor->ST = 4;
+        if (Keyboard_get(processor->keyboard, *key) == KEY_UP && processor->ST == 0) {
+            Keyboard_wait(processor->keyboard, &processor->regV[reg]);
+            return 0;
+        }
+    }
+    free(key);
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
     return 0;
 }
