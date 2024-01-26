@@ -1,4 +1,6 @@
 #include "chip8.h"
+#include <pthread.h>
+#include <bits/sigthread.h>
 
 void chip8_init(const char* path) {
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -59,7 +61,16 @@ void chip8_init(const char* path) {
             RAM_destroy(chip8->RAM);
             exit(1);
         }
-        chip8_cycle(chip8);
+
+        pthread_t pthread_cycle, pthread_timer;
+
+        pthread_create(&pthread_cycle, NULL, chip8_cycle, chip8);
+        pthread_create(&pthread_timer, NULL, chip8_dec_timers, chip8);
+
+        pthread_exit(&pthread_timer);
+        pthread_exit(&pthread_cycle);
+
+        printf("test");
     }
     if (errcode != QUIT) {
             fprintf(stderr,"Le programme s'est terminé anormalmeent "
@@ -103,14 +114,14 @@ int chip8_load(struct chip8* chip8, const char* path) {
 }
 
 // Viser 500Hz
-void chip8_cycle(struct chip8* chip8) {
+void* chip8_cycle(void* arg) {
+    struct chip8* chip8 = arg;
     SDL_Event event;
     int cpt = 0;
     while (errcode != QUIT) {
         processor_fetch_decode_execute(chip8->processor);
         if (cpt == 8) {
             chip8_refresh_screen(chip8);
-            chip8_dec_timers(chip8);
             cpt = 0;
         }
 
@@ -129,19 +140,29 @@ void chip8_cycle(struct chip8* chip8) {
         cpt++;
     }
     chip8_destroy(chip8);
+    return NULL;
 }
 
-void chip8_dec_timers(struct chip8* chip8) {
-    if (chip8->processor->ST > 0) {
-        chip8->processor->ST--;
+void* chip8_dec_timers(void* arg) {
+    struct chip8* chip8 = arg;
+    int cpt = 0;
+    while (errcode != QUIT) {
+        if (cpt == 8 && chip8 != NULL && chip8->processor != NULL) {
+            cpt = 0;
+            if (chip8->processor->ST > 0) {
+                chip8->processor->ST--;
+            }
+            if (chip8->processor->DT > 0) {
+                chip8->processor->DT--;
+            }
+        }
+        cpt++;
+        SDL_Delay(2);
     }
-    if (chip8->processor->DT > 0) {
-        chip8->processor->DT--;
-    }
-
+    return NULL;
 }
 
-// Viser 30/60Hz
+
 void chip8_refresh_screen(struct chip8* chip8) {
     Display_update(chip8->display);
 }

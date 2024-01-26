@@ -26,6 +26,8 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
     processor->programCounter = 512;
     processor->SP = 0;
     processor->I = 0;
+    processor->ST = 0;
+    processor->DT = 0;
 
     return processor;
 }
@@ -137,6 +139,7 @@ int processor_fetch_decode_execute(struct Processor* processor) {
     } else {
         return OPCODE;
     }
+    return 0;
 }
 
 // Load Sprite in memory
@@ -297,7 +300,6 @@ int processor_8xy5_sub(struct Processor* processor, uint8_t reg1, uint8_t reg2){
 }
 
 int processor_8xy6_shr(struct Processor* processor, uint8_t reg1, uint8_t reg2) {
-    printf("Reg1 : %d, reg2: %d\n", reg1, reg2);
     if (reg2 <= 15) {
         processor->regV[reg1] = processor->regV[reg2];
     }
@@ -403,16 +405,6 @@ int processor_Fx07_lddt(struct Processor* processor, uint8_t reg) {
 }
 
 int processor_Fx0A_ldvk(struct Processor* processor, uint8_t reg) {
-    uint8_t* key = malloc(sizeof(int));
-    Keyboard_wait(processor->keyboard, key);
-    while (Keyboard_get(processor->keyboard, *key) == KEY_DOWN) {
-        processor->ST = 4;
-        if (Keyboard_get(processor->keyboard, *key) == KEY_UP && processor->ST == 0) {
-            Keyboard_wait(processor->keyboard, &processor->regV[reg]);
-            return 0;
-        }
-    }
-    free(key);
     Keyboard_wait(processor->keyboard, &processor->regV[reg]);
     return 0;
 }

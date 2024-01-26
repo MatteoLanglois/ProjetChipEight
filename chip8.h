@@ -88,9 +88,9 @@ int chip8_load(struct chip8* chip8, const char* path);
  * \relates chip8
  * \fn void chip8_cycle(struct chip8* chip8)
  * \brief Fonction de boucle de la machine.
- * \param chip8 La machine.
+ * \param arg La machine.
  */
-void chip8_cycle(struct chip8* chip8);
+void* chip8_cycle(void* arg);
 
 /**
  * \relates chip8
@@ -98,7 +98,7 @@ void chip8_cycle(struct chip8* chip8);
  * \brief Fonction de décrémentation des timers.
  * \param chip8 La machine.
  */
-void chip8_dec_timers(struct chip8* chip8);
+void* chip8_dec_timers(void* arg);
 
 /**
  * \relates chip8
