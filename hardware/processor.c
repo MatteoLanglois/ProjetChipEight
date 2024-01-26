@@ -50,92 +50,92 @@ int processor_fetch_decode_execute(struct Processor* processor) {
     processor->programCounter += 2;
     // decode & execute
     if (instruction == 0x00E0) {
-        processor_00e0_cls(processor);
+        errcode = processor_00e0_cls(processor);
     } else if (instruction == 0x00EE) {
-        processor_00ee_ret(processor);
+        errcode = processor_00ee_ret(processor);
     } else if ((instruction & 0xF000) == 0) {
-        processor_0nnn_sys(processor, instruction);
+        errcode = processor_0nnn_sys(processor, instruction);
     } else if ((instruction & 0xF000) == 0x1000) {
-        processor_1nnn_jp(processor, instruction & 0x0FFF);
+        errcode = processor_1nnn_jp(processor, instruction & 0x0FFF);
     } else if ((instruction & 0xF000) == 0x2000) {
-        processor_2nnn_call(processor, instruction & 0x0FFF);
+        errcode = processor_2nnn_call(processor, instruction & 0x0FFF);
     } else if ((instruction & 0xF000) == 0x3000) {
-        processor_3xkk_se(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_3xkk_se(processor, (instruction & 0x0F00) >> 8,
                           instruction & 0x00FF);
     } else if ((instruction & 0xF000) == 0x4000) {
-        processor_4xkk_sne(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_4xkk_sne(processor, (instruction & 0x0F00) >> 8,
                            instruction & 0x00FF);
     } else if ((instruction & 0xF000) == 0x5000) {
-        processor_5xy0_sereg(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_5xy0_sereg(processor, (instruction & 0x0F00) >> 8,
                              (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF000) == 0x6000) {
-        processor_6xkk_ldval(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_6xkk_ldval(processor, (instruction & 0x0F00) >> 8,
                              instruction & 0x00FF);
     } else if ((instruction & 0xF000) == 0x7000) {
-        processor_7xkk_add(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_7xkk_add(processor, (instruction & 0x0F00) >> 8,
                            instruction & 0x00FF);
     } else if ((instruction & 0xF00F) == 0x8000) {
-        processor_8xy0_ldreg(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy0_ldreg(processor, (instruction & 0x0F00) >> 8,
                              (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8001) {
-        processor_8xy1_or(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy1_or(processor, (instruction & 0x0F00) >> 8,
                           (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8002) {
-        processor_8xy2_and(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy2_and(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8003) {
-        processor_8xy3_xor(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy3_xor(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8004) {
-        processor_8xy4_addc(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy4_addc(processor, (instruction & 0x0F00) >> 8,
                             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8005) {
-        processor_8xy5_sub(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy5_sub(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8006) {
-        processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy6_shr(processor, (instruction & 0x0F00) >> 8,
             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x8007) {
-        processor_8xy7_subn(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xy7_subn(processor, (instruction & 0x0F00) >> 8,
                             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F) == 0x800E) {
-        processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_8xyE_shl(processor, (instruction & 0x0F00) >> 8,
             (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF00F ) == 0x9000) {
-        processor_9xy0_sne_reg(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_9xy0_sne_reg(processor, (instruction & 0x0F00) >> 8,
                                (instruction & 0x00F0) >> 4);
     } else if ((instruction & 0xF000) == 0xA000) {
-        processor_Annn_ldi(processor, instruction & 0x0FFF);
+        errcode = processor_Annn_ldi(processor, instruction & 0x0FFF);
     } else if ((instruction & 0xF000) == 0xB000) {
-        processor_Bnnn_jpv0(processor, instruction & 0x0FFF);
+        errcode = processor_Bnnn_jpv0(processor, instruction & 0x0FFF);
     } else if ((instruction & 0xF000) == 0xC000) {
-        processor_Cxkk_rnd(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_Cxkk_rnd(processor, (instruction & 0x0F00) >> 8,
                            instruction & 0x00FF);
     } else if ((instruction & 0xF000) == 0xD000) {
-        processor_Dxyn_drw(processor, (instruction & 0x0F00) >> 8,
+        errcode = processor_Dxyn_drw(processor, (instruction & 0x0F00) >> 8,
                            (instruction & 0x00F0) >> 4, instruction & 0x000F);
     } else if ((instruction & 0xF0FF) == 0xE09E) {
-        processor_Ex9E_skp(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Ex9E_skp(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xE0A1) {
-        processor_ExA1_sknp(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_ExA1_sknp(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF015) {
-        processor_Fx15_lddt(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx15_lddt(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF055) {
-        processor_Fx55_ldw(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx55_ldw(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF065) {
-        processor_Fx65_ldr(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx65_ldr(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF007) {
-        processor_Fx07_lddt(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx07_lddt(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF00A) {
-        processor_Fx0A_ldvk(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx0A_ldvk(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF018) {
-        processor_Fx18_ldst(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx18_ldst(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF01E) {
-        processor_Fx1E_addi(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx1E_addi(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF029) {
-        processor_Fx29_ldf(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx29_ldf(processor, (instruction & 0x0F00) >> 8);
     } else if ((instruction & 0xF0FF) == 0xF033) {
-        processor_Fx33_ldb(processor, (instruction & 0x0F00) >> 8);
+        errcode = processor_Fx33_ldb(processor, (instruction & 0x0F00) >> 8);
     } else {
         return OPCODE;
     }
