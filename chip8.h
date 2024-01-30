@@ -63,8 +63,17 @@ struct chip8 {
  * \fn void chip8_init(const char* path)
  * \brief Fonction d'initialisation de la machine.
  * \param path Le chemin vers la ROM à charger.
+ * \return La machine initialisée.
  */
-void chip8_init(const char* path);
+struct chip8* chip8_init(const char* path);
+
+/**
+ * \relates chip8
+ * \fn void chip8_start(struct chip8* chip8)
+ * \brief Fonction de démarrage de la machine.
+ * \param chip8 La machine à démarrer.
+ */
+void chip8_start(struct chip8* chip8);
 
 /**
  * \relates chip8

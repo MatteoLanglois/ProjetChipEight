@@ -1,16 +1,23 @@
 #include "chip8.h"
 #include <pthread.h>
-#include <bits/sigthread.h>
 
-void chip8_init(const char* path) {
+struct chip8* chip8_init(const char* path) {
+    struct chip8* chip8 = NULL;
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
         printf("Error initializing SDL: %s\n", SDL_GetError());
+        errcode = SDL;
     } else {
-        struct chip8* chip8 = malloc(sizeof(struct chip8));
+        chip8 = malloc(sizeof(struct chip8));
+        if (chip8 == NULL) {
+            printf("Erreur lors de l'initialisation de la machine");
+            errcode = MALLOC;
+            exit(1);
+        }
 
         chip8->RAM = RAM_init();
         if (chip8->RAM == NULL) {
             printf("Erreur lors de l'initialisation de la RAM");
+            free(chip8);
             exit(1);
         }
 
@@ -32,7 +39,7 @@ void chip8_init(const char* path) {
 
         chip8->speaker = malloc(sizeof(struct Speaker));
         if (Speaker_init(chip8->speaker) == 1) {
-            printf("Erreur lors de l'initialisation        du haut-parleur");
+            printf("Erreur lors de l'initialisation du haut-parleur");
             free(chip8->display);
             free(chip8->keyboard);
             RAM_destroy(chip8->RAM);
@@ -61,22 +68,18 @@ void chip8_init(const char* path) {
             RAM_destroy(chip8->RAM);
             exit(1);
         }
-
-        pthread_t pthread_cycle, pthread_timer;
-
-        pthread_create(&pthread_cycle, NULL, chip8_cycle, chip8);
-        pthread_create(&pthread_timer, NULL, chip8_dec_timers, chip8);
-
-        pthread_exit(&pthread_timer);
-        pthread_exit(&pthread_cycle);
-
-        printf("test");
     }
-    if (errcode != QUIT) {
-            fprintf(stderr,"Le programme s'est terminé anormalmeent "
-                           "(errcode=%s)\n",errorstr());
-            exit(1);
-    }
+
+    return chip8;
+}
+
+void chip8_start(struct chip8* chip8) {
+    pthread_t pthread_cycle, pthread_timer;
+
+    pthread_create(&pthread_cycle, NULL, chip8_cycle, chip8);
+    pthread_create(&pthread_timer, NULL, chip8_dec_timers, chip8);
+
+    pthread_exit(&pthread_timer);
 }
 
 void chip8_destroy(struct chip8* chip8) {
@@ -138,6 +141,10 @@ void* chip8_cycle(void* arg) {
             Speaker_off(chip8->speaker);
         }
         cpt++;
+
+        if (errcode != QUIT && errcode != 0) {
+            fprintf(stderr,"Erreur : %d\n", errcode);
+        }
     }
     chip8_destroy(chip8);
     return NULL;
