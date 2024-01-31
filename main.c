@@ -11,12 +11,12 @@ int main() {
     char* rom = getChoosedRom();
     // On initialise la machine
     struct chip8* machine = chip8_init(rom);
+    // On enlève la ROM de la mémoire
+    free(rom);
     // On lance la machine
     chip8_start(machine);
     // On détruit la machine
     chip8_destroy(machine);
-    // On libère la mémoire
-    free(rom);
 }
 
 char* getChoosedRom() {
