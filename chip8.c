@@ -121,39 +121,49 @@ void* chip8_cycle(void* arg) {
     struct chip8* chip8 = arg;
     SDL_Event event;
     int cpt = 0;
+    // Mainloop
     while (errcode != QUIT) {
+        // Appel du fetch decode execute
         processor_fetch_decode_execute(chip8->processor);
+        // Rafraichissement de l'écran à un taux d'environ 60hz (500/8)
         if (cpt == 8) {
             chip8_refresh_screen(chip8);
             cpt = 0;
         }
-
+        // S'il y a un evenement de fermeture de fenetre
         while(SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
+                // On quitte la boucle
                 errcode = QUIT;
             }
         }
 
-        SDL_Delay(2);
+        // Gestion du son
         if (chip8->processor->ST > 0) {
             Speaker_on(chip8->speaker);
         } else {
             Speaker_off(chip8->speaker);
         }
-        cpt++;
 
+        // Gestion des erreurs
         if (errcode != QUIT && errcode != 0) {
             fprintf(stderr,"Erreur : %d\n", errcode);
         }
+        // On attend 2ms pour être à 500Hz
+        SDL_Delay(2);
+        // On incrémente le compteur
+        cpt++;
     }
-    chip8_destroy(chip8);
     return NULL;
 }
 
 void* chip8_dec_timers(void* arg) {
+    // On récupère la machine
     struct chip8* chip8 = arg;
     int cpt = 0;
+    // Tant qu'on ne quitte pas
     while (errcode != QUIT) {
+        // On décrémente les timers à un taux d'environ 60hz (500/8)
         if (cpt == 8 && chip8 != NULL && chip8->processor != NULL) {
             cpt = 0;
             if (chip8->processor->ST > 0) {
@@ -163,7 +173,9 @@ void* chip8_dec_timers(void* arg) {
                 chip8->processor->DT--;
             }
         }
+        // On incrémente le compteur
         cpt++;
+        // On attend 2ms pour être à 500Hz
         SDL_Delay(2);
     }
     return NULL;
@@ -171,5 +183,6 @@ void* chip8_dec_timers(void* arg) {
 
 
 void chip8_refresh_screen(struct chip8* chip8) {
+    // On rafraichit l'écran
     Display_update(chip8->display);
 }
