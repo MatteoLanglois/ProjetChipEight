@@ -41,6 +41,7 @@ Run the project with the following command:
 ## Status of the project
 * All instructions are implemented
 * All tests are passing
+* You could run full game
 * You could quit the program with the cross on the window
 * Code is documented with doxygen and C comments
 * No warning during the compilation and no memory leaks
