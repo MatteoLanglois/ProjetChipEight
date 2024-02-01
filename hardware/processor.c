@@ -7,12 +7,9 @@ struct Processor* Proc_init(struct Display* display, struct Keyboard* keyboard,
         printf("Erreur lors de l'initialisation du processeur");
         return NULL;
     }
-    // On initialise la pile
+    // On initialise la pile et les registres
     for (int i = 0; i < 16; i++) {
         processor->stack[i] = 0;
-    }
-    // On initialise les registres
-    for (int i = 0; i < 16; i++) {
         processor->regV[i] = 0;
     }
 
