@@ -12,6 +12,8 @@ is expected to allow any CHIP 8 ROM file to be read processor_8xy2 and run. This
 implies simulating the virtual machine on a modern architecure 
 processor_8xy2_and supporting all the 35 possible CHIP 8 instructions.
 
+* The code was written using the Clion IDE from jetbrains.
+
 ## Starting the project
 ### Prerequisites
 You need to have the following tools installed on your system:
@@ -35,4 +37,16 @@ Run the project with the following command:
 ```
 ./cmake-build-debug/ProjetChipEight
 ```
+
+## Status of the project
+* All instructions are implemented
+* All tests are passing
+* You could quit the program with the cross on the window
+* Code is documented with doxygen and C comments
+* No warning during the compilation and no memory leaks
+* The project use the lib provided by the school
+
+### TODO
+* Implements IO (keyboard, speaker, display) by ourselves
+* better handling of the errors
 
